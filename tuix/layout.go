@@ -58,8 +58,10 @@ func (l LayoutNode) WithDirection(dir Direction) *LayoutNode {
 }
 
 func Fixed(n int) Sizing { return Sizing{Mode: SizingFixed, Value: n} }
-func Grow(n int) Sizing  { return Sizing{Mode: SizingGrow, Value: n} }
-func Fit() Sizing        { return Sizing{Mode: SizingFit} }
+
+func Grow(n int) Sizing { return Sizing{Mode: SizingGrow, Value: n} }
+
+func Fit() Sizing { return Sizing{Mode: SizingFit} }
 
 func (l *LayoutNode) WithSize(w, h Sizing) *LayoutNode {
 	l.WidthSizing = w

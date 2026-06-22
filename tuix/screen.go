@@ -10,6 +10,27 @@ import (
 	"golang.org/x/term"
 )
 
+// Screen represents a double-buffered terminal canvas.
+//
+// Screen maintains two cell grids:
+//
+//   - cells: current frame
+//   - prev: previously flushed frame
+//
+// Dirty region tracking allows only modified areas of the terminal
+// to be repainted, minimizing ANSI output and significantly improving
+// rendering performance.
+//
+// A Screen also manages:
+//
+//   - Terminal dimensions
+//   - Raw mode lifecycle
+//   - Cursor visibility
+//   - Scrollback handling
+//   - Incremental rendering
+//
+// Screen is not safe for concurrent use.
+
 type Screen struct {
 	height int
 	width  int
@@ -44,12 +65,32 @@ type Screen struct {
 	maxDirtyCol int
 }
 
+// Cell represents a single terminal cell.
+//
+// A cell contains:
+//
+//   - Rune: character to render
+//   - Style: foreground/background attributes
+//   - Wide: whether the rune occupies two columns
+//
+// Wide is used to properly render East Asian and emoji characters.
 type Cell struct {
 	Rune  rune
 	Style Style
 	Wide  bool
 }
 
+// GetCell returns the cell at the specified coordinates.
+//
+// Parameters:
+//
+//   - x: column index
+//   - y: row index
+//
+// Example:
+//
+//	cell := screen.GetCell(10, 5)
+//	fmt.Println(string(cell.Rune))
 func (s *Screen) GetCell(x int, y int) Cell {
 	return s.cells[x][y]
 }
@@ -62,6 +103,22 @@ func makeCellGrid(width, height int) [][]Cell {
 	return grid
 }
 
+// NewScreenWriter creates a new Screen that renders to the provided
+// io.Writer.
+//
+// Parameters:
+//
+//   - width: screen width in cells
+//   - height: screen height in cells
+//   - out: destination writer
+//
+// Example:
+//
+//	screen := tuix.NewScreenWriter(
+//	    80,
+//	    24,
+//	    os.Stdout,
+//	)
 func NewScreenWriter(width int, height int, out io.Writer) *Screen {
 	s := &Screen{
 		height: height,
@@ -86,9 +143,27 @@ func (s *Screen) resetDirtyTracking() {
 	s.maxDirtyCol = -1
 }
 
-func (s Screen) Width() int  { return s.width }
+// Width returns the current screen width in cells.
+//
+// Example:
+//
+//	w := screen.Width()
+func (s Screen) Width() int { return s.width }
+
+// Height returns the current screen height in cells.
+//
+// Example:
+//
+//	h := screen.Height()
 func (s Screen) Height() int { return s.height }
 
+// Resize changes the screen dimensions and recreates all cell buffers.
+//
+// Existing contents are discarded.
+//
+// Example:
+//
+//	screen.Resize(120, 40)
 func (s *Screen) Resize(width int, height int) {
 	s.width = width
 	s.height = height
@@ -98,6 +173,20 @@ func (s *Screen) Resize(width int, height int) {
 	s.dirty = true
 }
 
+// Start initializes terminal rendering.
+//
+// It:
+//
+//   - Clears the terminal
+//   - Enables raw mode
+//   - Queries terminal dimensions
+//   - Hides the cursor
+//   - Enables bracketed paste mode
+//
+// Example:
+//
+//	screen.Start()
+//	defer screen.Stop()
 func (s *Screen) Start() {
 	fmt.Print("\033[H\033[2J\033[3J")
 
@@ -114,6 +203,17 @@ func (s *Screen) Start() {
 	fmt.Fprintf(s.out, "\033[?2004h") // bracketed paste on
 }
 
+// Stop restores the terminal to its previous state.
+//
+// It:
+//
+//   - Shows the cursor
+//   - Disables bracketed paste
+//   - Restores terminal settings
+//
+// Example:
+//
+//	defer screen.Stop()
 func (s Screen) Stop() {
 	fmt.Fprintf(s.out, "\033[?2004l") // bracketed paste off
 	fmt.Fprintf(s.out, "\033[?25h")   // show cursor

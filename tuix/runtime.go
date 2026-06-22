@@ -13,6 +13,42 @@ type App struct {
 	renderer *ComponentRenderer
 }
 
+// NewApp creates and initializes a new terminal application.
+//
+// NewApp performs the complete application bootstrap process:
+//
+//  1. Creates a Screen that writes to os.Stdout.
+//  2. Puts the terminal into raw mode.
+//  3. Hides the cursor and enables bracketed paste mode.
+//  4. Detects the actual terminal dimensions.
+//  5. Creates the root Renderer.
+//  6. Returns a fully initialized App instance.
+//
+// The width and height arguments act as fallback dimensions when the
+// terminal size cannot be determined (for example when stdout is
+// redirected or running in certain CI environments).
+//
+// In normal interactive terminals, the application's dimensions are
+// automatically expanded to the real terminal viewport, regardless of
+// the values passed to this constructor.
+//
+// Example:
+//
+//	app := tuix.NewApp(80, 24)
+//	defer app.Stop()
+//
+//	app.Render(func() tuix.Element {
+//	    return tuix.Text("Hello, TUIX!")
+//	})
+//
+//	app.Run()
+//
+// Example using automatic terminal sizing:
+//
+//	app := tuix.NewApp(0, 0)
+//	defer app.Stop()
+//
+//	app.Run()
 func NewApp(width, height int) *App {
 
 	screen := NewScreenWriter(width, height, os.Stdout)

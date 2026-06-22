@@ -9,6 +9,99 @@ const (
 	ElementOverlay // floating absolute-position container — see Overlay()
 )
 
+// Box creates a container element that arranges its children using a
+// flexbox-style layout.
+//
+// Box is the primary layout primitive in TUIX. A box can arrange its
+// children either horizontally (Row) or vertically (Column), apply
+// padding, spacing, alignment, justification, sizing, and styling.
+//
+// If Width or Height is not specified, the box defaults to Fit(),
+// meaning it sizes itself to its content.
+//
+// Parameters:
+//
+//   - props: Layout configuration such as direction, sizing, padding,
+//     alignment, and justification.
+//   - style: Visual styling including borders, foreground/background
+//     colors, and text attributes.
+//   - children: Child elements to render inside the box.
+//
+// Common use cases:
+//
+//   - Vertical page layouts
+//   - Header, sidebar, and footer layouts
+//   - Forms and dashboards
+//   - Nested flexbox-style UIs
+//
+// Example:
+//
+//	app := tuix.Box(
+//		tuix.Props{
+//			Direction: tuix.Column,
+//			Gap:       1,
+//			Padding:   [4]int{1, 2, 1, 2},
+//			Width:     tuix.Grow(1),
+//			Height:    tuix.Grow(1),
+//		},
+//		tuix.NewStyle(),
+//		tuix.Text("Header"),
+//		tuix.Text("Content"),
+//		tuix.Text("Footer"),
+//	)
+//
+// Row layout:
+//
+//	row := tuix.Box(
+//		tuix.Props{
+//			Direction: tuix.Row,
+//			Gap:       2,
+//		},
+//		tuix.NewStyle(),
+//		tuix.Text("Left"),
+//		tuix.Text("Center"),
+//		tuix.Text("Right"),
+//	)
+//
+// Sidebar layout:
+//
+//	layout := tuix.Box(
+//		tuix.Props{
+//			Direction: tuix.Row,
+//			Width:     tuix.Grow(1),
+//			Height:    tuix.Grow(1),
+//		},
+//		tuix.NewStyle(),
+//		tuix.Box(
+//			tuix.Props{
+//				Width: tuix.Fixed(30),
+//			},
+//			sidebarStyle,
+//			...,
+//		),
+//		tuix.Box(
+//			tuix.Props{
+//				Width: tuix.Grow(1),
+//			},
+//			mainStyle,
+//			...,
+//		),
+//	)
+//
+// Padding order follows CSS conventions:
+//
+//	[top, right, bottom, left]
+//
+// Example:
+//
+//	Padding: [4]int{1, 2, 1, 2}
+//
+// is equivalent to:
+//
+//	padding-top:    1
+//	padding-right:  2
+//	padding-bottom: 1
+//	padding-left:   2
 func Box(props Props, style Style, children ...Element) Element {
 	width := props.Width
 	if width == (Sizing{}) {
