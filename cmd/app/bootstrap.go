@@ -77,7 +77,7 @@ func registerDefaultHandlers(bus *events.EventBus) {
 			appState.mu.Lock()
 			appState.CurrentPage = page
 			appState.mu.Unlock()
-			fmt.Printf("📍 Page changed to: %s\n", page)
+			// fmt.Printf("📍 Page changed to: %s\n", page)
 		}
 	})
 

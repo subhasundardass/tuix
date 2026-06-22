@@ -27,34 +27,34 @@ func Root(props tuix.Props) tuix.Element {
 	ctx := BuildContext()
 
 	// Local state for UI (syncs with app state)
-	page, setPage := tuix.UseState(appState.GetPage())
+	// page, setPage := tuix.UseState(appState.GetPage())
 	dark, setDark := tuix.UseState(appState.IsDarkMode())
 
 	// ⭐ Track previous page to detect changes
-	prevPage, setPrevPage := tuix.UseState("")
-	pageChanged := prevPage != page
-	if pageChanged {
-		setPrevPage(page)
+	// prevPage, setPrevPage := tuix.UseState("")
+	// pageChanged := prevPage != page
+	// if pageChanged {
+	// 	setPrevPage(page)
 
-		// ⭐ FORCE MARK ALL CELLS AS DIRTY
-		if appScreen != nil {
-			appScreen.ForceMarkAllDirty()
-		}
-	}
+	// 	// ⭐ FORCE MARK ALL CELLS AS DIRTY
+	// 	if appScreen != nil {
+	// 		appScreen.ForceMarkAllDirty()
+	// 	}
+	// }
 
 	// Handle keyboard input
 	if tuix.CurrentKey.Rune != 0 {
 		switch tuix.CurrentKey.Rune {
 		case '1':
-			setPage("home")
+			// setPage("home")
 			appState.SetPage("home")
 			ctx.NavigateTo("home") // Also call via context
 		case '2':
-			setPage("settings")
+			// setPage("settings")
 			appState.SetPage("settings")
 			ctx.NavigateTo("settings")
 		case '3':
-			setPage("about")
+			// setPage("about")
 			appState.SetPage("about")
 			ctx.NavigateTo("about")
 		case 't':
@@ -67,19 +67,19 @@ func Root(props tuix.Props) tuix.Element {
 
 	}
 
-	if tuix.CurrentKey.Code == tuix.KeyEscape {
-		setPage("home")
-		appState.SetPage("home")
-		ctx.NavigateTo("home")
-	}
+	// if tuix.CurrentKey.Code == tuix.KeyEscape {
+	// 	setPage("home")
+	// 	appState.SetPage("home")
+	// 	ctx.NavigateTo("home")
+	// }
 
-	if tuix.CurrentKey.Code == tuix.KeyCtrlC {
-		return tuix.Text("Goodbye!", tuix.NewStyle())
-	}
+	// if tuix.CurrentKey.Code == tuix.KeyCtrlC {
+	// 	return tuix.Text("Goodbye!", tuix.NewStyle())
+	// }
 
 	// Choose which page to render
 	var content tuix.Element
-	switch page {
+	switch ctx.Page {
 	case "home":
 		content = pages.HomePage(tuix.Props{})
 	case "settings":

@@ -16,63 +16,39 @@ type LayoutProps struct {
 func Layout(props LayoutProps) tuix.Element {
 	width := 80
 	height := 24
-	contentHeight := height - 2 // Header + Footer
 
 	return tuix.Box(
 		tuix.Props{
 			Direction: tuix.Column,
-			Gap:       0,
 			Width:     tuix.Fixed(width),
 			Height:    tuix.Fixed(height),
+			Gap:       0,
 		},
 		tuix.NewStyle().Background(tuix.Black),
 
 		// Header
 		renderHeader(props.Title, props.Dark),
 
-		// ⭐ Content area with clear layer
+		// Content fills remaining height
 		tuix.Box(
 			tuix.Props{
-				Direction: tuix.Column,
-				Width:     tuix.Fixed(width),
-				Height:    tuix.Fixed(contentHeight),
-				Padding:   [4]int{1, 2, 1, 2},
+				Width:  tuix.Grow(1),
+				Height: tuix.Grow(1),
 			},
-			tuix.NewStyle().
-				Background(tuix.Black),
-
-			// ⭐ KEY FIX: First render a clear box (spaces)
-			// This overwrites old content with empty space
-			clearContent(width-4, contentHeight-2),
-
-			// Then render the new content on top
+			tuix.NewStyle(),
 			props.Content,
 		),
 
 		// Footer
-		renderFooter(props.Dark),
-	)
-}
+		tuix.Box(
+			tuix.Props{
+				Width:  tuix.Grow(1),
+				Height: tuix.Fixed(1),
+			},
+			tuix.NewStyle(),
 
-// ⭐ NEW: ClearContent creates a box filled with spaces
-func clearContent(width, height int) tuix.Element {
-	// Create a blank space string for one row
-	spaceRow := tuix.Text(strings.Repeat(" ", width), tuix.NewStyle())
-
-	// Build a column of space rows
-	children := []tuix.Element{}
-	for i := 0; i < height; i++ {
-		children = append(children, spaceRow)
-	}
-
-	return tuix.Box(
-		tuix.Props{
-			Direction: tuix.Column,
-			Width:     tuix.Fixed(width),
-			Height:    tuix.Fixed(height),
-		},
-		tuix.NewStyle().Background(tuix.Black),
-		children...,
+			tuix.Text("F1 Help  F2 Menu  F10 Exit", tuix.NewStyle()),
+		),
 	)
 }
 
@@ -83,7 +59,7 @@ func renderHeader(title string, dark bool) tuix.Element {
 	return tuix.Box(
 		tuix.Props{
 			Direction: tuix.Row,
-			Padding:   [4]int{1, 2, 1, 2},
+			Padding:   [4]int{0, 2, 0, 2},
 		},
 		tuix.NewStyle().Background(bgColor),
 		tuix.Text(" "+title+" ",
