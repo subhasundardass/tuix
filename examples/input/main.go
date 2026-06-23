@@ -42,14 +42,11 @@ func App(props tuix.Props) tuix.Element {
 			}(),
 		),
 
-		//---
-		// ExampleBasicLegend(),
-
 		tuix.Box(
 			tuix.Props{Direction: tuix.Column, Padding: [4]int{0, 1, 0, 1}, Width: tuix.Grow(1)},
 			tuix.NewStyle().Border(tuix.Border{
 				Top: true, Right: true, Bottom: true, Left: true,
-				Chars: tuix.BorderRounded, Color: tuix.BrightCyan,
+				Chars: tuix.BorderRounded, Title: "Output",
 			}),
 			tuix.Text("📋 Form Preview", tuix.NewStyle().Bold(true).Foreground(tuix.BrightCyan)),
 
@@ -58,7 +55,7 @@ func App(props tuix.Props) tuix.Element {
 					return tuix.Box(
 						tuix.Props{Direction: tuix.Column, Gap: 0},
 						tuix.NewStyle(),
-						tuix.Text("✅ Submitted successfully!", success),
+						tuix.Text("Submitted successfully!", success),
 						tuix.Text(fmt.Sprintf("  Name: %s", formData["name"]), body),
 						tuix.Text(fmt.Sprintf("  Email: %s", formData["email"]), body),
 						tuix.Text(fmt.Sprintf("  Age: %s", formData["age"]), body),
@@ -158,7 +155,7 @@ func ExampleForm(props ExampleFormProps) tuix.Element {
 					tuix.Box(
 						tuix.Props{Width: tuix.Fixed(30)},
 						tuix.NewStyle(),
-						tuix.Text("Name:", tuix.NewStyle().Foreground(tuix.White)), // ← Colon at end
+						tuix.Text("Name:", tuix.NewStyle().Foreground(tuix.BrightWhite)), // ← Colon at end
 					),
 					components.Input(
 						isFocused(0),
@@ -305,7 +302,7 @@ func ExampleForm(props ExampleFormProps) tuix.Element {
 				),
 
 				tuix.Text("", tuix.NewStyle()),
-				tuix.Text("↓/↑: Navigate  |  Enter: Next/Submit  |  Space: Toggle",
+				tuix.Text("↓/↑: Navigate  |  Enter: Next/Submit ",
 					tuix.NewStyle().Foreground(tuix.BrightBlack)),
 			)
 		},

@@ -109,9 +109,9 @@ func Input(
 
 	var fieldStyle tuix.Style
 	if focused {
-		fieldStyle = tuix.NewStyle().Foreground(tuix.White)
+		fieldStyle = tuix.NewStyle().Foreground(tuix.BrightWhite).Bold(true)
 	} else {
-		fieldStyle = tuix.NewStyle().Foreground(tuix.BrightBlack)
+		fieldStyle = tuix.NewStyle().Foreground(tuix.BrightBlack).Bold(true)
 	}
 
 	var display string
@@ -148,7 +148,7 @@ func Checkbox(focused bool, onChange func(bool)) tuix.Element {
 	if focused {
 		style = tuix.NewStyle().Foreground(tuix.Cyan).Bold(true)
 	} else {
-		style = tuix.NewStyle().Foreground(tuix.White)
+		style = tuix.NewStyle().Foreground(tuix.White).Bold(true)
 	}
 	return tuix.Text(box, style)
 }
@@ -312,9 +312,9 @@ func DateInput(props DateInputProps) tuix.Element {
 	if props.Focused {
 		style = tuix.NewStyle().
 			Foreground(tuix.White).
-			Background(tuix.BrightBlack)
+			Background(tuix.BrightBlack).Bold(true)
 	} else {
-		style = tuix.NewStyle().Foreground(tuix.White)
+		style = tuix.NewStyle().Foreground(tuix.White).Bold(true)
 	}
 
 	return tuix.Text(display, style)
@@ -496,9 +496,9 @@ func NumberInput(props NumberInputProps) tuix.Element {
 
 	fieldStyle := tuix.NewStyle()
 	if props.Focused {
-		fieldStyle = fieldStyle.Foreground(tuix.White)
+		fieldStyle = fieldStyle.Foreground(tuix.White).Bold(true)
 	} else {
-		fieldStyle = fieldStyle.Foreground(tuix.BrightBlack)
+		fieldStyle = fieldStyle.Foreground(tuix.BrightBlack).Bold(true)
 	}
 
 	return tuix.WrappedText(displayWithCursor, fieldStyle)
