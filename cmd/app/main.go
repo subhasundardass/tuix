@@ -30,18 +30,6 @@ func Root(props tuix.Props) tuix.Element {
 	// page, setPage := tuix.UseState(appState.GetPage())
 	dark, setDark := tuix.UseState(appState.IsDarkMode())
 
-	// ⭐ Track previous page to detect changes
-	// prevPage, setPrevPage := tuix.UseState("")
-	// pageChanged := prevPage != page
-	// if pageChanged {
-	// 	setPrevPage(page)
-
-	// 	// ⭐ FORCE MARK ALL CELLS AS DIRTY
-	// 	if appScreen != nil {
-	// 		appScreen.ForceMarkAllDirty()
-	// 	}
-	// }
-
 	// Handle keyboard input
 	if tuix.CurrentKey.Rune != 0 {
 		switch tuix.CurrentKey.Rune {
@@ -92,7 +80,7 @@ func Root(props tuix.Props) tuix.Element {
 
 	// ⭐ PROVIDE CONTEXT TO ALL CHILDREN ⭐
 	// This makes ctx available via UseContext anywhere in the tree
-	return AppContext.Provide(ctx, func() tuix.Element {
+	return DefaultContext.Provide(ctx, func() tuix.Element {
 		return ui.Layout(ui.LayoutProps{
 			Title:   appState.Config.AppName,
 			Content: content,

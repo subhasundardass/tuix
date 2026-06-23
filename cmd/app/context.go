@@ -7,7 +7,7 @@ import (
 )
 
 // AppContextData holds all data available via context
-type AppContextData struct {
+type AppContext struct {
 	// Data
 	Page   string
 	Dark   bool
@@ -21,7 +21,7 @@ type AppContextData struct {
 }
 
 // Create the context with a default value
-var AppContext = tuix.CreateContext(AppContextData{
+var DefaultContext = tuix.CreateContext(AppContext{
 	Page:        "home",
 	Dark:        false,
 	User:        &User{Name: "Guest", Email: "guest@example.com", Role: "viewer"},
@@ -32,9 +32,9 @@ var AppContext = tuix.CreateContext(AppContextData{
 })
 
 // BuildContext creates a context value from the current app state
-func BuildContext() AppContextData {
+func BuildContext() AppContext {
 	state := GetApp()
-	return AppContextData{
+	return AppContext{
 		Page:        state.CurrentPage,
 		Dark:        state.DarkMode,
 		User:        state.User,
