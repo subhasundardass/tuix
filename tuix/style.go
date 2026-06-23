@@ -80,6 +80,8 @@ type Border struct {
 	Top, Right, Bottom, Left bool
 	Chars                    BorderChars
 	Color                    Color
+
+	Title string
 }
 
 func (b Border) Any() bool {

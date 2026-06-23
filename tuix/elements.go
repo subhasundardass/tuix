@@ -12,7 +12,7 @@ const (
 // Box creates a container element that arranges its children using a
 // flexbox-style layout.
 //
-// Box is the primary layout primitive in TUIX. A box can arrange its
+// Box is the primary layout primitive in  A box can arrange its
 // children either horizontally (Row) or vertically (Column), apply
 // padding, spacing, alignment, justification, sizing, and styling.
 //
@@ -36,52 +36,52 @@ const (
 //
 // Example:
 //
-//	app := tuix.Box(
-//		tuix.Props{
-//			Direction: tuix.Column,
+//	app := Box(
+//		Props{
+//			Direction: Column,
 //			Gap:       1,
 //			Padding:   [4]int{1, 2, 1, 2},
-//			Width:     tuix.Grow(1),
-//			Height:    tuix.Grow(1),
+//			Width:     Grow(1),
+//			Height:    Grow(1),
 //		},
-//		tuix.NewStyle(),
-//		tuix.Text("Header"),
-//		tuix.Text("Content"),
-//		tuix.Text("Footer"),
+//		NewStyle(),
+//		Text("Header"),
+//		Text("Content"),
+//		Text("Footer"),
 //	)
 //
 // Row layout:
 //
-//	row := tuix.Box(
-//		tuix.Props{
-//			Direction: tuix.Row,
+//	row := Box(
+//		Props{
+//			Direction: Row,
 //			Gap:       2,
 //		},
-//		tuix.NewStyle(),
-//		tuix.Text("Left"),
-//		tuix.Text("Center"),
-//		tuix.Text("Right"),
+//		NewStyle(),
+//		Text("Left"),
+//		Text("Center"),
+//		Text("Right"),
 //	)
 //
 // Sidebar layout:
 //
-//	layout := tuix.Box(
-//		tuix.Props{
-//			Direction: tuix.Row,
-//			Width:     tuix.Grow(1),
-//			Height:    tuix.Grow(1),
+//	layout := Box(
+//		Props{
+//			Direction: Row,
+//			Width:     Grow(1),
+//			Height:    Grow(1),
 //		},
-//		tuix.NewStyle(),
-//		tuix.Box(
-//			tuix.Props{
-//				Width: tuix.Fixed(30),
+//		NewStyle(),
+//		Box(
+//			Props{
+//				Width: Fixed(30),
 //			},
 //			sidebarStyle,
 //			...,
 //		),
-//		tuix.Box(
-//			tuix.Props{
-//				Width: tuix.Grow(1),
+//		Box(
+//			Props{
+//				Width: Grow(1),
 //			},
 //			mainStyle,
 //			...,
@@ -102,6 +102,7 @@ const (
 //	padding-right:  2
 //	padding-bottom: 1
 //	padding-left:   2
+
 func Box(props Props, style Style, children ...Element) Element {
 	width := props.Width
 	if width == (Sizing{}) {

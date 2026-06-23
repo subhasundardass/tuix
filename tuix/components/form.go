@@ -6,12 +6,13 @@ import (
 	"github.com/subhasundardass/tuix/tuix"
 )
 
-// ⭐ Field types
+// Field types
 const (
 	FieldTypeText     = "text"
 	FieldTypeCheckbox = "checkbox"
-	FieldTypeSelect   = "select"
 	FieldTypeButton   = "button"
+	FieldTypeNumber   = "number"
+	FieldTypeDate     = "date"
 	FieldTypeCustom   = "custom"
 )
 
@@ -19,14 +20,25 @@ const (
 type Field struct {
 	ID       string
 	Label    string
-	Type     string // "text", "checkbox", "select", "button", "custom"
+	Type     string
 	Value    string
-	Options  []string
 	OnChange func(string)
 	OnToggle func(bool)
 	OnSubmit func()
 
-	// ⭐ For custom fields - you can pass any component
+	//Number Input specific
+	Decimal     int
+	Min         *float64
+	Max         *float64
+	Step        float64
+	Placeholder string
+	Width       int
+
+	//Date Input specific
+	DateMask        string
+	DatePlaceholder string
+
+	//For custom fields
 	CustomRender func(focused bool, data map[string]string, setData func(map[string]string)) tuix.Element
 }
 
@@ -37,19 +49,24 @@ type FormProps struct {
 	OnValidate func(map[string]string) map[string]string
 	Width      int
 	Height     int
+	//Custom render function for manual layout
+	RenderFunc func(focusedIndex int, setFocused func(int), formData map[string]string, setFormData func(map[string]string)) tuix.Element
 }
 
 // Form manages a complete form with auto-focus and navigation
 func Form(props FormProps) tuix.Element {
-	// ⭐ Focus state
+	//Focus state - managed HERE
 	focusIndex, setFocusIndex := tuix.UseState(0)
 	totalFields := len(props.Fields)
 
-	// ⭐ Form data
+	//Form data
 	formData, setFormData := tuix.UseState(make(map[string]string))
 	errors, setErrors := tuix.UseState(make(map[string]string))
 
-	// ⭐ Handle keyboard navigation
+	//Get current field
+	currentField := props.Fields[focusIndex]
+
+	//Handle keyboard navigation - managed HERE
 	switch tuix.CurrentKey.Code {
 	case tuix.KeyDown:
 		setFocusIndex((focusIndex + 1) % totalFields)
@@ -58,27 +75,44 @@ func Form(props FormProps) tuix.Element {
 		setFocusIndex((focusIndex - 1 + totalFields) % totalFields)
 
 	case tuix.KeyEnter:
-		currentField := props.Fields[focusIndex]
-		if currentField.Type == FieldTypeButton {
+		//Tagged switch on field type
+		switch currentField.Type {
+		case FieldTypeButton:
 			validateAndSubmit(props, formData, setErrors)
-		} else {
+		default:
+			// All other fields: move to next
 			setFocusIndex((focusIndex + 1) % totalFields)
+		}
+
+	case tuix.KeySpace:
+		//Tagged switch on field type
+		switch currentField.Type {
+		case FieldTypeCheckbox:
+			// Do nothing - Checkbox component handles Space
+			break
+		default:
+			// All other fields: do nothing
 		}
 	}
 
-	// ⭐ Build fields with proper focus
+	//If custom render function provided, use it
+	if props.RenderFunc != nil {
+		return props.RenderFunc(focusIndex, setFocusIndex, formData, setFormData)
+	}
+
+	//Default rendering (automatic)
 	fieldElements := []tuix.Element{}
 	for i, field := range props.Fields {
 		isFocused := focusIndex == i
 		fieldElements = append(fieldElements, renderField(field, isFocused, formData, setFormData))
 	}
 
-	// ⭐ Error summary
+	//Error summary
 	errorSummary := renderErrors(errors)
 
-	// ⭐ Navigation help
+	//Navigation help
 	help := tuix.Text(
-		fmt.Sprintf("  ↓: Next  |  ↑: Previous  |  Enter: Next/Submit  (%d/%d)",
+		fmt.Sprintf("  ↓: Next  |  ↑: Previous  |  Enter: Next/Submit  |  Space: Toggle  (%d/%d)",
 			focusIndex+1, totalFields),
 		tuix.NewStyle().Foreground(tuix.BrightBlack),
 	)
@@ -92,7 +126,6 @@ func Form(props FormProps) tuix.Element {
 		},
 		tuix.NewStyle().Background(tuix.Black),
 
-		// All fields
 		tuix.Box(
 			tuix.Props{
 				Direction: tuix.Column,
@@ -102,10 +135,7 @@ func Form(props FormProps) tuix.Element {
 			fieldElements...,
 		),
 
-		// Error summary
 		errorSummary,
-
-		// Navigation help
 		help,
 	)
 }
@@ -121,14 +151,16 @@ func renderField(field Field, focused bool, formData map[string]string, setFormD
 	case FieldTypeCheckbox:
 		return renderCheckboxField(field, focused, formData, setFormData)
 
-	// case FieldTypeSelect:
-	// 	return renderSelectField(field, focused, formData, setFormData)
-
 	case FieldTypeButton:
 		return renderButtonField(field, focused)
 
+	case FieldTypeNumber:
+		return renderNumberField(field, focused, value, formData, setFormData)
+
+	case FieldTypeDate:
+		return renderDateField(field, focused, value, formData, setFormData)
+
 	case FieldTypeCustom:
-		// ⭐ Custom field - render whatever you want
 		if field.CustomRender != nil {
 			return field.CustomRender(focused, formData, setFormData)
 		}
@@ -139,10 +171,8 @@ func renderField(field Field, focused bool, formData map[string]string, setFormD
 	}
 }
 
-// ⭐ Built-in field renderers
 func renderTextField(field Field, focused bool, value string, formData map[string]string, setFormData func(map[string]string)) tuix.Element {
 	input := Input(
-		field.Label+":",
 		focused,
 		value,
 		func(newValue string) {
@@ -158,18 +188,23 @@ func renderTextField(field Field, focused bool, value string, formData map[strin
 		return tuix.Box(
 			tuix.Props{Direction: tuix.Column, Gap: 0},
 			tuix.NewStyle(),
+			tuix.Text(field.Label+": ", tuix.NewStyle().Foreground(tuix.White)),
 			input,
 			tuix.Text("  ✗ "+err,
 				tuix.NewStyle().Foreground(tuix.Red).Italic(true)),
 		)
 	}
 
-	return input
+	return tuix.Box(
+		tuix.Props{Direction: tuix.Row, Gap: 1},
+		tuix.NewStyle(),
+		tuix.Text(field.Label+": ", tuix.NewStyle().Foreground(tuix.White)),
+		input,
+	)
 }
 
 func renderCheckboxField(field Field, focused bool, formData map[string]string, setFormData func(map[string]string)) tuix.Element {
-	return Checkbox(
-		field.Label,
+	checkbox := Checkbox(
 		focused,
 		func(value bool) {
 			if value {
@@ -183,55 +218,118 @@ func renderCheckboxField(field Field, focused bool, formData map[string]string, 
 			}
 		},
 	)
+
+	return tuix.Box(
+		tuix.Props{Direction: tuix.Row, Gap: 1},
+		tuix.NewStyle(),
+		checkbox,
+		tuix.Text(" "+field.Label, tuix.NewStyle().Foreground(tuix.White)),
+	)
 }
-
-// func renderSelectField(field Field, focused bool, formData map[string]string, setFormData func(map[string]string)) tuix.Element {
-// 	selected := formData[field.ID]
-// 	if selected == "" && len(field.Options) > 0 {
-// 		selected = field.Options[0]
-// 		formData[field.ID] = selected
-// 		setFormData(formData)
-// 	}
-
-// 	return SelectPicker(
-// 		field.Options,
-// 		focused,
-// 		func(value string) {
-// 			formData[field.ID] = value
-// 			setFormData(formData)
-// 			if field.OnChange != nil {
-// 				field.OnChange(value)
-// 			}
-// 		},
-// 	)
-// }
 
 func renderButtonField(field Field, focused bool) tuix.Element {
 	return Button(field.Label, focused)
 }
 
-// ⭐ Validation and submission
+func renderNumberField(field Field, focused bool, value string, formData map[string]string, setFormData func(map[string]string)) tuix.Element {
+	input := NumberInput(NumberInputProps{
+		Value:       value,
+		Focused:     focused,
+		Decimal:     field.Decimal,
+		Min:         field.Min,
+		Max:         field.Max,
+		Step:        field.Step,
+		Placeholder: field.Placeholder,
+		Width:       field.Width,
+		OnChange: func(v string) {
+			formData[field.ID] = v
+			setFormData(formData)
+			if field.OnChange != nil {
+				field.OnChange(v)
+			}
+		},
+	})
+
+	if err, ok := formData["error_"+field.ID]; ok && err != "" {
+		return tuix.Box(
+			tuix.Props{Direction: tuix.Column, Gap: 0},
+			tuix.NewStyle(),
+			tuix.Text(field.Label+": ", tuix.NewStyle().Foreground(tuix.White)),
+			input,
+			tuix.Text("  ✗ "+err,
+				tuix.NewStyle().Foreground(tuix.Red).Italic(true)),
+		)
+	}
+
+	return tuix.Box(
+		tuix.Props{Direction: tuix.Row, Gap: 1},
+		tuix.NewStyle(),
+		tuix.Text(field.Label+": ", tuix.NewStyle().Foreground(tuix.White)),
+		input,
+	)
+}
+
+func renderDateField(field Field, focused bool, value string, formData map[string]string, setFormData func(map[string]string)) tuix.Element {
+	mask := field.DateMask
+	if mask == "" {
+		mask = "YYYY-MM-DD"
+	}
+
+	placeholder := field.DatePlaceholder
+	if placeholder == "" {
+		placeholder = mask
+	}
+
+	input := DateInput(DateInputProps{
+		Value:       value,
+		Focused:     focused,
+		Mask:        mask,
+		Placeholder: placeholder,
+		OnChange: func(v string) {
+			formData[field.ID] = v
+			setFormData(formData)
+			if field.OnChange != nil {
+				field.OnChange(v)
+			}
+		},
+		OnSubmit: func(string) {},
+	})
+
+	if err, ok := formData["error_"+field.ID]; ok && err != "" {
+		return tuix.Box(
+			tuix.Props{Direction: tuix.Column, Gap: 0},
+			tuix.NewStyle(),
+			tuix.Text(field.Label+": ", tuix.NewStyle().Foreground(tuix.White)),
+			input,
+			tuix.Text("  ✗ "+err,
+				tuix.NewStyle().Foreground(tuix.Red).Italic(true)),
+		)
+	}
+
+	return tuix.Box(
+		tuix.Props{Direction: tuix.Row, Gap: 1},
+		tuix.NewStyle(),
+		tuix.Text(field.Label+": ", tuix.NewStyle().Foreground(tuix.White)),
+		input,
+	)
+}
+
 func validateAndSubmit(props FormProps, formData map[string]string, setErrors func(map[string]string)) {
-	// ⭐ Validate if validator provided
 	if props.OnValidate != nil {
 		errors := props.OnValidate(formData)
 		setErrors(errors)
-
 		if len(errors) > 0 {
 			return
 		}
 	}
 
-	// ⭐ Clear errors
 	setErrors(make(map[string]string))
 
-	// ⭐ Submit
 	if props.OnSubmit != nil {
 		props.OnSubmit(formData)
 	}
 }
 
-// ⭐ Error rendering
 func renderErrors(errors map[string]string) tuix.Element {
 	if len(errors) == 0 {
 		return tuix.Text("", tuix.NewStyle())

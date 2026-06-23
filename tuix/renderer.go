@@ -384,9 +384,39 @@ func paintBorder(screen *Screen, rect Rect, base Style, b Border) {
 	x0, y0 := rect.X, rect.Y
 	x1, y1 := rect.X+rect.Width-1, rect.Y+rect.Height-1
 
+	// if b.Top {
+	// 	for x := x0 + 1; x < x1; x++ {
+	// 		screen.SetCell(x, y0, c.Top, bs)
+	// 	}
+	// }
+
+	//--Added title if avaiable
 	if b.Top {
+		inside := x1 - x0 - 1
+
+		// Draw full top border first
 		for x := x0 + 1; x < x1; x++ {
 			screen.SetCell(x, y0, c.Top, bs)
+		}
+
+		if b.Title != "" && inside > 2 {
+			title := " " + b.Title + " "
+			runes := []rune(title)
+
+			if len(runes) > inside {
+				runes = runes[:inside]
+			}
+
+			start := x0 + 2 // leave one border glyph before title
+
+			for i, r := range runes {
+				x := start + i
+				if x >= x1 {
+					break
+				}
+
+				screen.SetCell(x, y0, r, bs)
+			}
 		}
 	}
 	if b.Bottom && y1 != y0 {
