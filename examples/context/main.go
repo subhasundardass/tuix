@@ -22,7 +22,6 @@ var locales = []Locale{
 	{"en", "Hello, friend.", "space to switch language"},
 	{"es", "Hola, amigo.", "espacio para cambiar de idioma"},
 	{"fr", "Salut, mon ami.", "espace pour changer de langue"},
-	{"ja", "こんにちは、友よ。", "スペースで言語を切り替え"},
 }
 
 var LocaleContext = tuix.CreateContext(locales[0])
