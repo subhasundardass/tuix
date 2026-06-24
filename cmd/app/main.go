@@ -7,6 +7,7 @@ import (
 
 func main() {
 
-	tuiApp := tuix.NewApp(80, 24)
+	tuiApp := tuix.NewApp(0, 0) // Full Screen
+
 	tuiApp.Run(app.Root, tuix.Props{})
 }

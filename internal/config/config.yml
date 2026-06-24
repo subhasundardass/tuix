@@ -1,0 +1,9 @@
+app_name: "TUIX Demo"
+version: "1.0.0"
+default_page: "dashboard"
+
+theme: "dark"
+debug: true
+
+api_endpoint: "http://localhost:8080"
+log_level: "debug"
