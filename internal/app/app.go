@@ -1,70 +1,90 @@
 package app
 
 import (
+	"github.com/subhasundardass/tuix/internal/context"
+	appctx "github.com/subhasundardass/tuix/internal/context"
 	"github.com/subhasundardass/tuix/internal/ui"
-	"github.com/subhasundardass/tuix/internal/ui/pages"
+	"github.com/subhasundardass/tuix/internal/ui/layout"
 	"github.com/subhasundardass/tuix/tuix"
 )
 
 // Root is the main application component
 // It's exported so main can use it
 func Root(props tuix.Props) tuix.Element {
-	// Get current context
-	ctx := buildContext()
 
 	// Local state for UI
-	page, setPage := tuix.UseState(ctx.Page)
-	dark, setDark := tuix.UseState(ctx.Dark)
+	page, setPage := tuix.UseState(state.currentPage)
 
-	// Handle keyboard input
-	if tuix.CurrentKey.Rune != 0 {
-		switch tuix.CurrentKey.Rune {
-		case '1':
-			setPage("home")
-			ctx.NavigateTo("home")
-		case '2':
-			setPage("settings")
-			ctx.NavigateTo("settings")
-		case '3':
-			setPage("about")
-			ctx.NavigateTo("about")
-		case 't':
-			setDark(!dark)
-			ctx.ToggleTheme()
-		case 'q':
-			return tuix.Text("", tuix.NewStyle())
-		}
-	}
+	ctx := &appctx.AppContext{}
 
+	ctx.Set(appctx.AppContextValues{
+		CurrentPage: page,
+		AppName:     state.config.AppName,
+		DarkMode:    state.darkMode,
+		UserName:    state.user.name,
+		NavigateTo: func(p string) {
+			setPage(p)
+			state.mu.Lock()
+			state.currentPage = p
+			state.mu.Unlock()
+		},
+		ToggleDark: func() {
+			state.mu.Lock()
+			state.darkMode = !state.darkMode
+			state.mu.Unlock()
+		},
+		PushScreen:    PushScreen,
+		ReplaceScreen: ReplaceScreen,
+		PopScreen:     PopScreen,
+		GetStack:      GetScreenStack,
+		GetCurrent:    GetCurrentScreen,
+	})
+
+	// Handle Escape
 	if tuix.CurrentKey.Code == tuix.KeyEscape {
-		setPage("home")
-		ctx.NavigateTo("home")
+		popped := ctx.PopScreen()
+		setPage(popped)
 	}
 
-	if tuix.CurrentKey.Code == tuix.KeyCtrlC {
-		return tuix.Text("Goodbye!", tuix.NewStyle())
+	// Sync with stack
+	if current := ctx.GetCurrent(); current != page {
+		setPage(current)
 	}
 
-	// Choose page
 	var content tuix.Element
-	switch page {
-	case "home":
-		content = pages.HomePage(tuix.Props{})
-	case "settings":
-		content = pages.SettingsPage(tuix.Props{})
-	case "about":
-		content = pages.AboutPage(tuix.Props{})
-	default:
-		content = tuix.Text("404 - Page Not Found", tuix.NewStyle())
+	currentID := ctx.GetCurrent()
+	screen, ok := ui.GetScreen(currentID)
+
+	if !ok {
+		// Fallback for 404
+		content = tuix.Text("404 - Page Not Found", tuix.NewStyle().Foreground(tuix.Red))
+	} else {
+		// Render the screen with context
+		content = screen.Render(ctx, tuix.Props{})
 	}
+
+	//Get screen title
+	title := "Unknown"
+	if screen, ok := ui.GetScreen(currentID); ok {
+		title = screen.Title
+	}
+
+	// switch ctx.GetCurrent() {
+	// case "home":
+	// 	content = screen.HomePage(ctx, tuix.Props{})
+	// case "settings":
+	// 	content = screen.SettingsPage(tuix.Props{})
+	// case "about":
+	// 	content = screen.AboutPage(tuix.Props{})
+	// default:
+	// 	content = tuix.Text("404 - Page Not Found", tuix.NewStyle())
+	// }
 
 	// Provide context
-	return DefaultContext.Provide(ctx, func() tuix.Element {
-		return ui.Layout(ui.LayoutProps{
-			Title:   ctx.Config.AppName,
+	return context.DefaultContext.Provide(ctx, func() tuix.Element {
+		return layout.MasterLayout(layout.LayoutProps{
+			Title:   title,
 			Content: content,
-			Dark:    dark,
-			// User:    ctx.User,
 		})
 	})
 }
