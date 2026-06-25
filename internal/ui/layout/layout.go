@@ -2,6 +2,7 @@
 package layout
 
 import (
+	"github.com/subhasundardass/tuix/internal/context"
 	appctx "github.com/subhasundardass/tuix/internal/context"
 	"github.com/subhasundardass/tuix/tuix"
 )
@@ -12,14 +13,22 @@ type LayoutProps struct {
 	Content tuix.Element
 }
 
-func MasterLayout(props LayoutProps) tuix.Element {
+func MasterLayout(ctx *context.AppContext, props LayoutProps) tuix.Element {
 
 	// appctx := context.Use() // ← one line, done
 	// ctx.NavigateTo("home")
 	// ctx.ToggleDark()
 	// _ = ctx.Page()
 
+	if ctx == nil {
+		return tuix.Text("ERROR: ctx is nil in MasterLayout", tuix.NewStyle().Foreground(tuix.Red))
+	}
+
 	//Main content with border and title
+	borderChars := tuix.BorderRounded
+	if tuix.IsFocused("content") {
+		borderChars = tuix.BorderDouble
+	}
 	mainContent := tuix.Box(
 		tuix.Props{
 			Direction: tuix.Column,
@@ -32,7 +41,7 @@ func MasterLayout(props LayoutProps) tuix.Element {
 			Right:  true,
 			Bottom: true,
 			Left:   true,
-			Chars:  tuix.BorderRounded,
+			Chars:  borderChars,
 			Color:  tuix.BrightBlack,
 			Title:  props.Title,
 		}),
@@ -48,8 +57,8 @@ func MasterLayout(props LayoutProps) tuix.Element {
 			Height:    tuix.Grow(1), // ← Fill remaining height
 		},
 		tuix.NewStyle(),
-		SidebarTree(tuix.Props{}), // Sidebar
-		mainContent,               // Main content
+		SidebarTree(ctx, tuix.Props{}), // Sidebar
+		mainContent,                    // Main content
 	)
 
 	//Full layout: Header + Body + Footer

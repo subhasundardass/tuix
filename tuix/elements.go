@@ -175,6 +175,14 @@ func If(condition bool, choice1 Element, choice2 Element) Element {
 	return choice2
 }
 
+// ColorIf returns color1 if condition is true, otherwise color2
+func ColorIf(condition bool, color1, color2 Color) Color {
+	if condition {
+		return color1
+	}
+	return color2
+}
+
 // Markdown renders a markdown string with rich formatting including headers,
 // bold, italic, code, links, lists, blockquotes, and tables. The content fills
 // its container's available width and wraps automatically.

@@ -107,6 +107,32 @@ func (c Color) RGB() (uint8, uint8, uint8) {
 	return c.R, c.G, c.B
 }
 
+// ─── Better Gray Palette ──────────────────────────────────────────────────
+
+// DimGray - dark but visible
+var DimGray = Color{
+	Type: ColorRGB,
+	R:    105,
+	G:    105,
+	B:    105,
+}
+
+// MidGray - medium visibility (good for borders)
+var MidGray = Color{
+	Type: ColorRGB,
+	R:    169,
+	G:    169,
+	B:    169,
+}
+
+// LightGray - light but not white
+var LightGray = Color{
+	Type: ColorRGB,
+	R:    211,
+	G:    211,
+	B:    211,
+}
+
 var (
 	Black         = Color{Type: ColorANSI16, Code: 0}
 	Red           = Color{Type: ColorANSI16, Code: 1}

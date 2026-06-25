@@ -8,10 +8,18 @@ package app
 
 // PushScreen adds a screen to the top of the stack and makes it current.
 func PushScreen(screenID string) {
+
+	// tuix.Debug("PushScreen called with:", screenID)
+	// tuix.Debug("Before push - currentPage:", state.currentPage)
+	// tuix.Debug("Before push - screenStack:", state.screenStack)
+
 	state.mu.Lock()
 	defer state.mu.Unlock()
 	state.screenStack = append(state.screenStack, screenID)
 	state.currentPage = screenID
+
+	// tuix.Debug("After push - currentPage:", state.currentPage)
+	// tuix.Debug("After push - screenStack:", state.screenStack)
 }
 
 // PopScreen removes the top screen and returns the new current screen ID.
@@ -42,6 +50,8 @@ func GetScreenStack() []string {
 func GetCurrentScreen() string {
 	state.mu.RLock()
 	defer state.mu.RUnlock()
+
+	// tuix.Debug("GetCurrentScreen called, returning:", state.currentPage)
 	return state.currentPage
 }
 

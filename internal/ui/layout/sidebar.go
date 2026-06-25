@@ -1,6 +1,7 @@
 package layout
 
 import (
+	"github.com/subhasundardass/tuix/internal/context"
 	"github.com/subhasundardass/tuix/tuix"
 	"github.com/subhasundardass/tuix/tuix/components"
 )
@@ -110,16 +111,39 @@ var sidebarTree = []components.TreeNode{
 	},
 }
 
-func SidebarTree(props tuix.Props) tuix.Element {
+func SidebarTree(ctx *context.AppContext, props tuix.Props) tuix.Element {
 	// selected, setSelected := tuix.UseState("")
 
-	// ctx := context.Use()
+	// ⭐ Check if sidebar is focused
+	isFocused := tuix.IsFocused("sidebar")
+	// borderColor := tuix.ColorIf(isFocused, tuix.Cyan, tuix.BrightBlack)
+	borderChars := tuix.BorderRounded
+	if isFocused {
+		borderChars = tuix.BorderDouble
+	}
+
+	isLeafNode := make(map[string]bool)
+
+	var findLeafNodes func([]components.TreeNode)
+	findLeafNodes = func(nodes []components.TreeNode) {
+		for _, node := range nodes {
+			// If it has no children, it's a leaf node (the end of the branch)
+			isLeafNode[node.ID] = len(node.Children) == 0
+
+			if len(node.Children) > 0 {
+				findLeafNodes(node.Children)
+			}
+		}
+	}
+	findLeafNodes(sidebarTree)
 
 	return tuix.Box(
 		tuix.Props{Direction: tuix.Column, Padding: [4]int{1, 0, 0, 1}, Width: tuix.Fixed(30), Gap: 0},
 		tuix.NewStyle().Border(tuix.Border{
 			Top: true, Right: true, Bottom: true, Left: true,
-			Chars: tuix.BorderRounded, Color: tuix.BrightBlack,
+			// Chars: tuix.BorderRounded, Color: tuix.BrightBlack,
+			Chars: borderChars,
+			// Color: bo,
 			Title: "Navigation",
 		}),
 
@@ -131,13 +155,33 @@ func SidebarTree(props tuix.Props) tuix.Element {
 			components.Tree(
 				"sidebar",
 				sidebarTree,
-				true,
+				isFocused,
 				func(id string) {
-					tuix.Debug("Navigating to --> ", id)
-					// ctx.PushScreen(id)
-					// tuix.Show("about", "About Us", 60, 20, func(focused bool) tuix.Element {
-					// 	return screen.AboutPage(ctx, tuix.Props{}, focused)
-					// })
+
+					// Check if the clicked ID is a leaf node
+					if !isLeafNode[id] {
+						tuix.Debug("Parent node clicked. Ignoring execution for ID: ", id)
+						return
+					}
+
+					tuix.Debug("🟡 Sidebar onChange called with:", id)
+					if ctx == nil {
+						tuix.Debug("🟡 ctx is nil!")
+						return
+					}
+					tuix.Debug("🟡 Calling ctx.PushScreen with:", id)
+					ctx.PushScreen(id)
+
+					// If it IS a leaf node, execute the navigation/modal actions
+					// switch id {
+					// case "about":
+					// 	tuix.Show("about", "About Us", 60, 20, func(focused bool) tuix.Element {
+					// 		return screen.AboutPage(ctx, tuix.Props{})
+					// 	})
+					// default:
+					// 	// Handles "home", "settings", or any other terminal leaf nodes
+					// 	ctx.PushScreen(id)
+					// }
 				},
 			),
 		),

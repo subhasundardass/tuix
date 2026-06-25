@@ -336,19 +336,6 @@ func Tree(
 			}
 		}
 
-		// Show icon/indicator only if NOT focused
-		// But preserve spacing when focused to prevent text shift
-		// icon := ""
-		// if !isFocused {
-		// 	if node.isLeaf {
-		// 		icon = "📄 "
-		// 	} else {
-		// 		icon = (map[bool]string{true: "📂 ", false: "📁 "})[expanded[node.id]]
-		// 	}
-		// } else {
-		// 	icon = "   " // 3 spaces to match emoji width + space
-		// }
-
 		// Build line with separate styles for prefix and content
 		var lineElems []tuix.Element
 

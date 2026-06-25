@@ -57,6 +57,13 @@ func App(props tuix.Props) tuix.Element {
 
 	}
 
+	otherInput := tuix.Box(
+		tuix.Props{Direction: tuix.Row, Gap: 1},
+		tuix.NewStyle(),
+		tuix.Text("Label", tuix.NewStyle()),
+		components.Input(false, "myname", func(value string) {}),
+	)
+
 	return tuix.Box(
 		tuix.Props{
 			Direction: tuix.Column,
@@ -68,6 +75,8 @@ func App(props tuix.Props) tuix.Element {
 		// Header
 		tuix.Text("◆ Focus Demo (Tab / Shift+Tab)", title),
 		tuix.Text("(email is NOT focusable)", dim),
+
+		otherInput,
 
 		// NAME (focusable)
 		tuix.Box(

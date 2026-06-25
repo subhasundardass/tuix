@@ -43,3 +43,33 @@ func init() {
 		}
 	})
 }
+
+func SetPage(page string) {
+	state.mu.Lock()
+	defer state.mu.Unlock()
+	state.currentPage = page
+}
+
+func ToggleTheme() {
+	state.mu.Lock()
+	defer state.mu.Unlock()
+	state.darkMode = !state.darkMode
+}
+
+func IsDarkMode() bool {
+	state.mu.RLock()
+	defer state.mu.RUnlock()
+	return state.darkMode
+}
+
+func GetUserName() string {
+	state.mu.RLock()
+	defer state.mu.RUnlock()
+	return state.user.name
+}
+
+func GetConfig() *config.Config {
+	state.mu.RLock()
+	defer state.mu.RUnlock()
+	return state.config
+}

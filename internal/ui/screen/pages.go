@@ -88,7 +88,7 @@ func SettingsPage(ctx *context.AppContext, props tuix.Props) tuix.Element {
 	)
 }
 
-func AboutPage(ctx *context.AppContext, props tuix.Props, focused bool) tuix.Element {
+func AboutPage(ctx *context.AppContext, props tuix.Props) tuix.Element {
 	return tuix.Box(
 		tuix.Props{
 			Direction: tuix.Column,
