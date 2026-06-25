@@ -11,6 +11,7 @@ import (
 type App struct {
 	screen   *Screen
 	renderer *ComponentRenderer
+	focus    *FocusManager
 }
 
 // NewApp creates and initializes a new terminal application.
@@ -32,23 +33,7 @@ type App struct {
 // automatically expanded to the real terminal viewport, regardless of
 // the values passed to this constructor.
 //
-// Example:
-//
-//	app := tuix.NewApp(80, 24)
-//	defer app.Stop()
-//
-//	app.Render(func() tuix.Element {
-//	    return tuix.Text("Hello, TUIX!")
-//	})
-//
-//	app.Run()
-//
-// Example using automatic terminal sizing:
-//
-//	app := tuix.NewApp(0, 0)
-//	defer app.Stop()
-//
-//	app.Run()
+
 func NewApp(width, height int) *App {
 
 	screen := NewScreenWriter(width, height, os.Stdout)
@@ -68,6 +53,7 @@ func NewApp(width, height int) *App {
 	return &App{
 		screen:   screen,
 		renderer: renderer,
+		focus:    globalFocus,
 	}
 }
 

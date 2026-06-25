@@ -1,23 +1,6 @@
 // internal/app/screen.go
 package app
 
-import (
-	"github.com/subhasundardass/tuix/internal/context"
-	"github.com/subhasundardass/tuix/internal/ui"
-	"github.com/subhasundardass/tuix/tuix"
-)
-
-// ─── Helper Functions ─────────────────────────────────────────────────────
-
-// RenderScreen renders a screen by ID
-func RenderScreen(ctx *context.AppContext, id string, props tuix.Props) tuix.Element {
-	screen, ok := ui.GetScreen(id)
-	if !ok {
-		return tuix.Text("404 - Screen Not Found", tuix.NewStyle().Foreground(tuix.Red))
-	}
-	return screen.Render(ctx, props)
-}
-
 // screen.go is the screen stack manager.
 // It reads and writes the shared appState declared in state.go.
 // All functions here are package-level so app.go can wire them

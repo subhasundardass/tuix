@@ -2,11 +2,12 @@
 package layout
 
 import (
+	appctx "github.com/subhasundardass/tuix/internal/context"
 	"github.com/subhasundardass/tuix/tuix"
-	// appctx "github.com/subhasundardass/tuix/internal/context"
 )
 
 type LayoutProps struct {
+	Ctx     *appctx.AppContext
 	Title   string
 	Content tuix.Element
 }

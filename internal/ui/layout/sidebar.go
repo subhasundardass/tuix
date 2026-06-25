@@ -1,7 +1,6 @@
 package layout
 
 import (
-	"github.com/subhasundardass/tuix/internal/context"
 	"github.com/subhasundardass/tuix/tuix"
 	"github.com/subhasundardass/tuix/tuix/components"
 )
@@ -114,7 +113,7 @@ var sidebarTree = []components.TreeNode{
 func SidebarTree(props tuix.Props) tuix.Element {
 	// selected, setSelected := tuix.UseState("")
 
-	ctx := context.Use()
+	// ctx := context.Use()
 
 	return tuix.Box(
 		tuix.Props{Direction: tuix.Column, Padding: [4]int{1, 0, 0, 1}, Width: tuix.Fixed(30), Gap: 0},
@@ -135,7 +134,10 @@ func SidebarTree(props tuix.Props) tuix.Element {
 				true,
 				func(id string) {
 					tuix.Debug("Navigating to --> ", id)
-					ctx.PushScreen(id)
+					// ctx.PushScreen(id)
+					// tuix.Show("about", "About Us", 60, 20, func(focused bool) tuix.Element {
+					// 	return screen.AboutPage(ctx, tuix.Props{}, focused)
+					// })
 				},
 			),
 		),
