@@ -116,7 +116,7 @@ func WithOnSubmit(fn func(id string, value string)) InputOption {
 
 func TextInput(focused bool, opts ...InputOption) tuix.Element {
 
-	// ⭐ Add this debug
+	//Add this debug
 	tuix.Debug("TextInput - focused:", focused)
 	tuix.Debug("TextInput - CurrentKey.Code:", tuix.CurrentKey.Code)
 

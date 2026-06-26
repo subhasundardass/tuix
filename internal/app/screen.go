@@ -70,6 +70,7 @@ func ReplaceScreen(screenID string) {
 	} else {
 		state.screenStack[len(state.screenStack)-1] = screenID
 	}
+
 	state.currentPage = screenID
 }
 
@@ -79,6 +80,7 @@ func ResetStack(rootScreenID string) {
 	state.mu.Lock()
 	defer state.mu.Unlock()
 	state.screenStack = []string{rootScreenID}
+
 	state.currentPage = rootScreenID
 }
 

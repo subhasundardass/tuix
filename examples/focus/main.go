@@ -35,10 +35,10 @@ func App(props tuix.Props) tuix.Element {
 	label := tuix.NewStyle().
 		Foreground(tuix.BrightWhite)
 
-	// ⭐ Set focus order
+	//Set focus order
 	tuix.SetFocusOrder([]string{nameID, ageID, submitID})
 
-	// ⭐ Handle Enter key to move focus
+	//Handle Enter key to move focus
 	switch {
 	case tuix.IsFocused(nameID) && tuix.CurrentKey.Code == tuix.KeyEnter:
 		tuix.Debug("Enter Pressed in Name → focusing Age")
@@ -65,13 +65,13 @@ func App(props tuix.Props) tuix.Element {
 		tuix.Text("◆ Focus Demo (Tab / Shift+Tab)", title),
 		tuix.Text("(email is NOT focusable)", dim),
 
-		// ⭐ Other Input (disabled)
+		//Other Input (disabled)
 		tuix.Box(
 			tuix.Props{Direction: tuix.Row, Gap: 1},
 			tuix.NewStyle(),
 			tuix.Text("Label:", label),
 			components.TextInput(
-				false, // ⭐ disabled
+				false, //disabled
 				components.WithID("other"),
 				components.WithValue("disabled"),
 				components.WithWidth(20),
@@ -79,7 +79,7 @@ func App(props tuix.Props) tuix.Element {
 			),
 		),
 
-		// ⭐ NAME (focusable)
+		//NAME (focusable)
 		tuix.Box(
 			tuix.Props{Direction: tuix.Row, Gap: 1},
 			tuix.NewStyle(),
@@ -104,13 +104,13 @@ func App(props tuix.Props) tuix.Element {
 			}(),
 		),
 
-		// ⭐ EMAIL (NOT focusable)
+		//EMAIL (NOT focusable)
 		tuix.Box(
 			tuix.Props{Direction: tuix.Row, Gap: 1},
 			tuix.NewStyle(),
 			tuix.Text("Email:", label),
 			components.TextInput(
-				false, // ⭐ NOT focusable
+				false, //NOT focusable
 				components.WithID(emailID),
 				components.WithValue(email),
 				components.WithWidth(20),
@@ -126,7 +126,7 @@ func App(props tuix.Props) tuix.Element {
 			}(),
 		),
 
-		// ⭐ AGE (focusable)
+		//AGE (focusable)
 		tuix.Box(
 			tuix.Props{Direction: tuix.Row, Gap: 1},
 			tuix.NewStyle(),
@@ -150,7 +150,7 @@ func App(props tuix.Props) tuix.Element {
 			}(),
 		),
 
-		// ⭐ SUBMIT BUTTON (focusable)
+		//SUBMIT BUTTON (focusable)
 		tuix.Box(
 			tuix.Props{Direction: tuix.Row, Gap: 1},
 			tuix.NewStyle(),

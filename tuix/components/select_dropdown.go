@@ -117,7 +117,7 @@ func SelectDropdown(focused bool, opts ...SelectOptionFunc) tuix.Element {
 		opt(config)
 	}
 
-	// ⭐ State
+	//State
 	isOpen, setIsOpen := tuix.UseState(false)
 	highlightedIndex, setHighlightedIndex := tuix.UseState(0)
 
@@ -130,7 +130,7 @@ func SelectDropdown(focused bool, opts ...SelectOptionFunc) tuix.Element {
 		}
 	}
 
-	// ⭐ Get selected label
+	//Get selected label
 	selectedLabel := ""
 	for _, opt := range config.Options {
 		if opt.Value == config.Selected {
@@ -150,7 +150,7 @@ func SelectDropdown(focused bool, opts ...SelectOptionFunc) tuix.Element {
 		config.OnBlur(config.ID)
 	}
 
-	// ⭐ Handle keys
+	//Handle keys
 	if focused {
 		key := tuix.CurrentKey
 
@@ -200,7 +200,7 @@ func SelectDropdown(focused bool, opts ...SelectOptionFunc) tuix.Element {
 	}
 
 render:
-	// ⭐ Build display
+	//Build display
 	displayText := selectedLabel
 	if displayText == "" && len(config.Options) > 0 {
 		displayText = config.Options[0].Label
@@ -209,7 +209,7 @@ render:
 		displayText = "Select..."
 	}
 
-	// ⭐ Styles
+	//Styles
 	textStyle := config.Style
 	if focused {
 		textStyle = textStyle.Foreground(tuix.White)
@@ -229,7 +229,7 @@ render:
 		bracketStyle = bracketStyle.Foreground(tuix.BrightBlack)
 	}
 
-	// ⭐ Main field
+	//Main field
 	arrow := "▼"
 	if isOpen {
 		arrow = "▲"
@@ -261,13 +261,13 @@ render:
 		tuix.Text(" "+arrow+" ", bracketStyle),
 	)
 
-	// ⭐ Label
+	//Label
 	labelElement := tuix.Text("", tuix.NewStyle())
 	if config.Label != "" {
 		labelElement = tuix.Text(config.Label+":", tuix.NewStyle().Foreground(tuix.White))
 	}
 
-	// ⭐ Dropdown options (overlay)
+	//Dropdown options (overlay)
 	dropdownOverlay := tuix.Text("", tuix.NewStyle())
 	if isOpen && len(config.Options) > 0 {
 		optionElements := []tuix.Element{}
@@ -322,7 +322,7 @@ render:
 		)
 	}
 
-	// ⭐ Combine
+	//Combine
 	elements := []tuix.Element{}
 
 	if config.Label != "" {

@@ -125,9 +125,9 @@ func TextArea(focused bool, opts ...TextAreaOption) tuix.Element {
 		opt(config)
 	}
 
-	// ⭐ State for cursor position
+	//State for cursor position
 	pos, setPos := tuix.UseState(len(config.Value))
-	currentLine, setCurrentLine := tuix.UseState(0) // ⭐ FIXED: renamed to currentLine
+	currentLine, setCurrentLine := tuix.UseState(0) //FIXED: renamed to currentLine
 
 	if focused && config.OnFocus != nil && config.ID != "" {
 		config.OnFocus(config.ID)
@@ -185,7 +185,7 @@ func TextArea(focused bool, opts ...TextAreaOption) tuix.Element {
 				}
 			}
 		case tuix.KeyEnter:
-			// ⭐ Insert newline on Enter
+			//Insert newline on Enter
 			newValue := config.Value[:pos] + "\n" + config.Value[pos:]
 			config.Value = newValue
 			if config.OnChange != nil && config.ID != "" {
@@ -213,10 +213,10 @@ render:
 		display = config.Placeholder
 	}
 
-	// ⭐ Wrap text to width
+	//Wrap text to width
 	lines := wrapTextArea(display, config.Width)
 
-	// ⭐ Pad to height
+	//Pad to height
 	for len(lines) < config.Height {
 		lines = append(lines, "")
 	}
@@ -240,11 +240,11 @@ render:
 		bracketStyle = bracketStyle.Foreground(tuix.BrightBlack)
 	}
 
-	// ⭐ Build content lines with cursor
+	//Build content lines with cursor
 	contentLines := []tuix.Element{}
 	for lineIdx, lineContent := range lines {
 		displayLine := lineContent
-		// ⭐ FIXED: Use currentLine instead of line
+		//FIXED: Use currentLine instead of line
 		if focused && lineIdx == currentLine {
 			runes := []rune(displayLine)
 			if pos < len(runes) {
@@ -262,7 +262,7 @@ render:
 		elements = append(elements, tuix.Text(config.Prefix, bracketStyle))
 	}
 
-	// ⭐ Text area content
+	//Text area content
 	elements = append(elements, tuix.Box(
 		tuix.Props{
 			Direction: tuix.Column,

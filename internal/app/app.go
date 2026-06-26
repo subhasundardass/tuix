@@ -71,10 +71,10 @@ func Root(props tuix.Props) tuix.Element {
 	}
 
 	// Handle Escape
-	if tuix.CurrentKey.Code == tuix.KeyEscape {
-		popped := ctx.PopScreen()
-		setPage(popped)
-	}
+	// if tuix.CurrentKey.Code == tuix.KeyEscape {
+	// 	popped := ctx.PopScreen()
+	// 	setPage(popped)
+	// }
 
 	// Sync with stack
 	if current := ctx.GetCurrent(); current != page {

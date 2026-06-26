@@ -14,7 +14,7 @@ func HomePage(ctx *context.AppContext, props tuix.Props) tuix.Element {
 	// Focus management
 
 	focusIndex, setFocusIndex := tuix.UseState(0)
-	totalFields := 9
+	totalFields := 2
 
 	// Navigation
 	if tuix.IsFocused("content") {

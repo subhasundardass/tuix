@@ -220,13 +220,13 @@ func PasswordInput(focused bool, opts ...PasswordOption) tuix.Element {
 	}
 
 render:
-	// ⭐ Check min length
+	//Check min length
 	isValid := true
 	if config.MinLength > 0 && len(config.Value) < config.MinLength {
 		isValid = false
 	}
 
-	// ⭐ Build masked display
+	//Build masked display
 	display := ""
 	if focused {
 		// Show actual text when focused (or use mask)
@@ -265,7 +265,7 @@ render:
 		bracketStyle = bracketStyle.Foreground(tuix.BrightBlack)
 	}
 
-	// ⭐ Cursor
+	//Cursor
 	cursorDisplay := display
 	if focused {
 		runes := []rune(cursorDisplay)
@@ -276,7 +276,7 @@ render:
 		}
 	}
 
-	// ⭐ Pad to width
+	//Pad to width
 	paddedDisplay := cursorDisplay
 	displayLen := len([]rune(paddedDisplay))
 	if displayLen < config.Width {

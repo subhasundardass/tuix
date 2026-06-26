@@ -91,12 +91,12 @@ func (a *App) Run(fn func(props Props) Element, props Props) {
 		}
 	}()
 
-	// ⭐ Start the screen
+	//Start the screen
 	a.screen.Start()
-	defer a.screen.Stop() // ⭐ ALWAYS restore terminal on exit
+	defer a.screen.Stop() //ALWAYS restore terminal on exit
 
-	// ⭐ Exit channel for graceful shutdown
-	exitCh := make(chan struct{})
+	//Exit channel for graceful shutdown
+	// exitCh := make(chan struct{})
 	quit := make(chan struct{})
 	var quitOnce sync.Once
 	requestQuit := func() {
@@ -106,7 +106,7 @@ func (a *App) Run(fn func(props Props) Element, props Props) {
 	resize := make(chan os.Signal, 1)
 	signal.Notify(resize, syscall.SIGWINCH)
 
-	// ⭐ Ticker for periodic updates
+	//Ticker for periodic updates
 	ticker := make(chan bool, 1)
 	go func() {
 		tick := false
@@ -115,13 +115,15 @@ func (a *App) Run(fn func(props Props) Element, props Props) {
 			tick = !tick
 			select {
 			case ticker <- tick:
+			case <-quit: // ← stop goroutine when app exits
+				return
 			default:
 				// Channel full, skip
 			}
 		}
 	}()
 
-	// ⭐ Keyboard input handler
+	//Keyboard input handler
 	go func() {
 		buf := make([]byte, 1024)
 		var scanner KeyScanner
@@ -141,14 +143,14 @@ func (a *App) Run(fn func(props Props) Element, props Props) {
 		}
 	}()
 
-	// ⭐ Initial render
+	//Initial render
 	a.Render(fn, props)
 
-	// ⭐ Main event loop
+	//Main event loop
 	for {
 		select {
 		case <-quit:
-			a.screen.Stop()
+			// a.screen.Stop()
 			return
 		case <-exitCh:
 			requestQuit()

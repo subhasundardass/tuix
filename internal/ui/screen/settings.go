@@ -8,12 +8,23 @@ import (
 
 func SettingsPage(ctx *context.AppContext, props tuix.Props) tuix.Element {
 	setting, setSetting := tuix.UseState("")
+	focusIndex, setFocusIndex := tuix.UseState(0)
+	totalFields := 1
 
-	// ⭐ Check if content has focus
+	//Check if content has focus
 	contentFocused := tuix.IsFocused("content")
 
-	// ⭐ Remove any type assertions like:
-	// width := props["width"].(int)  // ← This causes panic!
+	// Navigation
+	if tuix.IsFocused("content") {
+		switch tuix.CurrentKey.Code {
+		case tuix.KeyEscape:
+			tuix.SetFocus("sidebar")
+		case tuix.KeyDown:
+			setFocusIndex((focusIndex + 1) % totalFields)
+		case tuix.KeyUp:
+			setFocusIndex((focusIndex - 1 + totalFields) % totalFields)
+		}
+	}
 
 	return tuix.Box(
 		tuix.Props{Direction: tuix.Column, Gap: 1, Padding: [4]int{1, 1, 1, 1}},
@@ -39,7 +50,7 @@ func SettingsPage(ctx *context.AppContext, props tuix.Props) tuix.Element {
 			),
 		),
 
-		// ⭐ Debug info
+		//Debug info
 		tuix.Text(
 			"🔵 Focus: ",
 			tuix.NewStyle().Foreground(tuix.BrightBlack),
