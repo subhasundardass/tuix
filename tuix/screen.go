@@ -218,6 +218,7 @@ func (s Screen) Stop() {
 	fmt.Fprintf(s.out, "\033[?2004l") // bracketed paste off
 	fmt.Fprintf(s.out, "\033[?25h")   // show cursor
 	term.Restore(int(os.Stdin.Fd()), s.oldState)
+
 }
 
 // SetCell writes value/style into cell (x, y). It diffs against the

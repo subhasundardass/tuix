@@ -40,15 +40,15 @@ func Root(props tuix.Props) tuix.Element {
 
 	// // F1 — open About window
 	// if tuix.CurrentKey.Code == tuix.KeyTab {
-	// 	// ⭐ Open window using the factory pattern
+	// 	// Open window using the factory pattern
 	// 	tuix.ShowAt("about", "🏠 About",
 	// 		func(focused bool, availHeight int) tuix.Element {
-	// 			// ⭐ This function is called when rendering the window
+	// 			// This function is called when rendering the window
 	// 			// It receives focus state and available height
 	// 			return screen.AboutPage(ctx, tuix.Props{
 	// 				Width:  tuix.Fixed(56),
-	// 				Height: tuix.Fixed(30), // ⭐ Use available height
-	// 			}, focused) // ⭐ Pass focused state to the page
+	// 				Height: tuix.Fixed(30), // Use available height
+	// 			}, focused) // Pass focused state to the page
 	// 		},
 	// 		30, 3, 60, 10,
 	// 	)

@@ -1,6 +1,7 @@
 package tuix
 
 import (
+	"fmt"
 	"os"
 	"os/signal"
 	"sync"
@@ -71,13 +72,23 @@ func Exit() {
 }
 
 func (a *App) Run(fn func(props Props) Element, props Props) {
-	a.Render(fn, props)
+	// ⭐ Ensure screen.Stop() is ALWAYS called
+	defer func() {
+		if r := recover(); r != nil {
+			if a.screen != nil {
+				a.screen.Stop()
+			}
+			fmt.Printf("App panicked: %v\n", r)
+			os.Exit(1)
+		}
+	}()
 
-	select {
-	case <-exitCh:
-	default:
-	}
+	// ⭐ Start the screen
+	a.screen.Start()
+	defer a.screen.Stop() // ⭐ ALWAYS restore terminal on exit
 
+	// ⭐ Exit channel for graceful shutdown
+	exitCh := make(chan struct{})
 	quit := make(chan struct{})
 	var quitOnce sync.Once
 	requestQuit := func() {
@@ -87,15 +98,22 @@ func (a *App) Run(fn func(props Props) Element, props Props) {
 	resize := make(chan os.Signal, 1)
 	signal.Notify(resize, syscall.SIGWINCH)
 
+	// ⭐ Ticker for periodic updates
+	ticker := make(chan bool, 1)
 	go func() {
 		tick := false
 		for {
 			time.Sleep(time.Millisecond * 500)
 			tick = !tick
-			ticker <- tick
+			select {
+			case ticker <- tick:
+			default:
+				// Channel full, skip
+			}
 		}
 	}()
 
+	// ⭐ Keyboard input handler
 	go func() {
 		buf := make([]byte, 1024)
 		var scanner KeyScanner
@@ -115,6 +133,10 @@ func (a *App) Run(fn func(props Props) Element, props Props) {
 		}
 	}()
 
+	// ⭐ Initial render
+	a.Render(fn, props)
+
+	// ⭐ Main event loop
 	for {
 		select {
 		case <-quit:

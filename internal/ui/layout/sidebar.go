@@ -114,7 +114,7 @@ var sidebarTree = []components.TreeNode{
 func SidebarTree(ctx *context.AppContext, props tuix.Props) tuix.Element {
 	// selected, setSelected := tuix.UseState("")
 
-	// ⭐ Check if sidebar is focused
+	// Check if sidebar is focused
 	isFocused := tuix.IsFocused("sidebar")
 	// borderColor := tuix.ColorIf(isFocused, tuix.Cyan, tuix.BrightBlack)
 	borderChars := tuix.BorderRounded
@@ -164,24 +164,14 @@ func SidebarTree(ctx *context.AppContext, props tuix.Props) tuix.Element {
 						return
 					}
 
-					tuix.Debug("🟡 Sidebar onChange called with:", id)
+					tuix.Debug(" Sidebar onChange called with:", id)
 					if ctx == nil {
-						tuix.Debug("🟡 ctx is nil!")
+						tuix.Debug(" ctx is nil!")
 						return
 					}
-					tuix.Debug("🟡 Calling ctx.PushScreen with:", id)
+					tuix.Debug(" Calling ctx.PushScreen with:", id)
 					ctx.PushScreen(id)
 
-					// If it IS a leaf node, execute the navigation/modal actions
-					// switch id {
-					// case "about":
-					// 	tuix.Show("about", "About Us", 60, 20, func(focused bool) tuix.Element {
-					// 		return screen.AboutPage(ctx, tuix.Props{})
-					// 	})
-					// default:
-					// 	// Handles "home", "settings", or any other terminal leaf nodes
-					// 	ctx.PushScreen(id)
-					// }
 				},
 			),
 		),

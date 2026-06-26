@@ -180,12 +180,12 @@ func (f *FocusManager) PopFocus() {
 
 var globalFocus = NewFocusManager()
 
-// ⭐ CURRENT - returns current focus
+// CURRENT - returns current focus
 func Current() string {
 	return globalFocus.Current()
 }
 
-// ⭐ SETORDER - sets Tab navigation order
+// SETORDER - sets Tab navigation order
 func SetFocusOrder(order []string) {
 	globalFocus.SetOrder(order)
 }

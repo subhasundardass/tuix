@@ -138,7 +138,7 @@ package tuix
 // 		closeHint = Text("", NewStyle())
 // 	}
 
-// 	// ⭐ Calculate available height for content
+// 	// Calculate available height for content
 // 	// Window height - (title bar 1 + separator 1 + padding 2 + close hint 1)
 // 	availableHeight := win.Height - 5
 
@@ -172,7 +172,7 @@ package tuix
 // 		// Separator
 // 		Text(sep, NewStyle().Foreground(BrightBlack)),
 
-// 		// ⭐ Content receives available height
+// 		// Content receives available height
 // 		win.Content(focused, availableHeight),
 
 // 		closeHint,
@@ -191,7 +191,7 @@ package tuix
 // // 			continue
 // // 		}
 
-// // 		// ⭐ Build window content with fixed width/height
+// // 		// Build window content with fixed width/height
 // // 		windowContent := Box(
 // // 			Props{
 // // 				Direction: Column,
@@ -228,7 +228,7 @@ package tuix
 // // 			Text(" ESC to close", NewStyle().Foreground(BrightBlack)),
 // // 		)
 
-// // 		// ⭐ Each window is an Overlay at its position
+// // 		// Each window is an Overlay at its position
 // // 		children = append(children, Overlay(win.X, win.Y, windowContent))
 // // 	}
 
@@ -259,7 +259,7 @@ package tuix
 // 		x := win.X + i*2
 // 		y := win.Y + i
 
-// 		// ⭐ Pass window and focus state to renderWindow
+// 		// Pass window and focus state to renderWindow
 // 		children = append(children, Overlay(x, y, renderWindow(win, isFocused)))
 // 	}
 

@@ -38,7 +38,7 @@ type AppContextValues struct {
 }
 
 func (c *AppContext) Set(v AppContextValues) {
-	// ⭐ Add nil check
+	// Add nil check
 	if c == nil {
 		return
 	}
