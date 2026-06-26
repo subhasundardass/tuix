@@ -109,19 +109,9 @@ func InputDemo() tuix.Element {
 			"Input demo: use ←/→ to move cursor; type/paste inserts at cursor",
 			tuix.NewStyle().Foreground(tuix.BrightBlack),
 		),
-<<<<<<< HEAD
-		components.Input(
-			true,
-			value,
-			func(v string) {
-				setValue(v)
-			},
-		),
-=======
 		components.Input(true, value, func(value string) {
 			setValue(value)
 		}),
->>>>>>> origin/dashboard
 	)
 }
 
