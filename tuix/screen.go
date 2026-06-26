@@ -390,6 +390,26 @@ func (s *Screen) clearDirty() {
 	}
 }
 
+// ForceMarkAllDirty marks the entire screen as dirty, forcing a full redraw.
+// This is useful after resize operations or when the screen content needs
+// a complete refresh.
+func (s *Screen) ForceMarkAllDirty() {
+	if s == nil {
+		return
+	}
+	s.dirty = true
+	for y := 0; y < s.height; y++ {
+		s.dirtyRows[y] = true
+	}
+	for x := 0; x < s.width; x++ {
+		s.dirtyCols[x] = true
+	}
+	s.minDirtyRow = 0
+	s.maxDirtyRow = s.height - 1
+	s.minDirtyCol = 0
+	s.maxDirtyCol = s.width - 1
+}
+
 // EnsureRoom guarantees that contentH rows fit within the physical
 // terminal viewport. When the content would overflow, it writes the
 // rows inline so the terminal scrolls older content into scrollback.

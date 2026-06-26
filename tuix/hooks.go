@@ -149,3 +149,13 @@ func UseContext[T any](c *Context[T]) T {
 	}
 	return c.stack[len(c.stack)-1]
 }
+
+// ResetComponentState clears all positional state slots.
+// Call this whenever the active screen changes so stale state
+// from the previous screen does not corrupt the new screen's slots.
+func ResetComponentState() {
+	State = nil
+	StateCursor = 0
+	Effects = nil
+	EffectCursor = 0
+}

@@ -41,10 +41,9 @@ func NewFocusManager() *FocusManager {
 // -----------------------------
 
 // SetFocus sets the active focused component.
-func (f *FocusManager) SetFocus(id string) {
+func (f *FocusManager) Focus(id string) {
 	f.mu.Lock()
 	defer f.mu.Unlock()
-	Debug("SetFocus called with: " + id) // ← add this
 	if id == "" {
 		f.current = ""
 		// trigger re-render
@@ -74,7 +73,6 @@ func (f *FocusManager) Current() string {
 func (f *FocusManager) IsFocused(id string) bool {
 	f.mu.RLock()
 	defer f.mu.RUnlock()
-	Debug("IsFocused check: " + id + " current: " + f.current)
 	return f.current == id
 }
 
@@ -181,7 +179,7 @@ func (f *FocusManager) PopFocus() {
 var globalFocus = NewFocusManager()
 
 // CURRENT - returns current focus
-func Current() string {
+func CurrentFocus() string {
 	return globalFocus.Current()
 }
 
@@ -191,13 +189,13 @@ func SetFocusOrder(order []string) {
 }
 
 // Focus sets global focus.
-func Focus(id string) {
-	globalFocus.SetFocus(id)
+func SetFocus(id string) {
+	globalFocus.Focus(id)
 }
 
 // Blur clears focus.
 func Blur() {
-	globalFocus.SetFocus("")
+	globalFocus.Focus("")
 }
 
 // IsFocused checks global focus.

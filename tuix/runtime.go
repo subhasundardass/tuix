@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"os"
 	"os/signal"
+	"runtime"
 	"sync"
 	"syscall"
 	"time"
@@ -72,12 +73,19 @@ func Exit() {
 }
 
 func (a *App) Run(fn func(props Props) Element, props Props) {
-	// ⭐ Ensure screen.Stop() is ALWAYS called
+
 	defer func() {
 		if r := recover(); r != nil {
 			if a.screen != nil {
 				a.screen.Stop()
 			}
+			// Add these lines
+			f, _ := os.Create("/tmp/panic.log")
+			buf := make([]byte, 4096)
+			n := runtime.Stack(buf, false)
+			fmt.Fprintf(f, "panic: %v\n\n%s", r, buf[:n])
+			f.Close()
+
 			fmt.Printf("App panicked: %v\n", r)
 			os.Exit(1)
 		}

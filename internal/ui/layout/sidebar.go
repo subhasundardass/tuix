@@ -116,7 +116,6 @@ func SidebarTree(ctx *context.AppContext, props tuix.Props) tuix.Element {
 
 	// Check if sidebar is focused
 	isFocused := tuix.IsFocused("sidebar")
-	// borderColor := tuix.ColorIf(isFocused, tuix.Cyan, tuix.BrightBlack)
 	borderChars := tuix.BorderRounded
 	if isFocused {
 		borderChars = tuix.BorderDouble
@@ -160,17 +159,23 @@ func SidebarTree(ctx *context.AppContext, props tuix.Props) tuix.Element {
 
 					// Check if the clicked ID is a leaf node
 					if !isLeafNode[id] {
-						tuix.Debug("Parent node clicked. Ignoring execution for ID: ", id)
+						// tuix.Debug("Parent node clicked. Ignoring execution for ID: ", id)
 						return
 					}
 
-					tuix.Debug(" Sidebar onChange called with:", id)
 					if ctx == nil {
 						tuix.Debug(" ctx is nil!")
 						return
 					}
-					tuix.Debug(" Calling ctx.PushScreen with:", id)
-					ctx.PushScreen(id)
+
+					if isFocused {
+						tuix.Debug("*Sidebar selected -> ", id)
+						ctx.PushScreen(id)
+
+						//After navigation, focus the content
+						tuix.SetFocus("content")
+						tuix.Debug("Navigated to:", id, "→ Focus:", tuix.CurrentFocus())
+					}
 
 				},
 			),

@@ -115,6 +115,11 @@ func WithOnSubmit(fn func(id string, value string)) InputOption {
 // ─── TextInput Component ────────────────────────────────────────────────────
 
 func TextInput(focused bool, opts ...InputOption) tuix.Element {
+
+	// ⭐ Add this debug
+	tuix.Debug("TextInput - focused:", focused)
+	tuix.Debug("TextInput - CurrentKey.Code:", tuix.CurrentKey.Code)
+
 	config := &InputConfig{
 		ID:          "",
 		Value:       "",

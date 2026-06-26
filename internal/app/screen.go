@@ -1,6 +1,8 @@
 // internal/app/screen.go
 package app
 
+import "github.com/subhasundardass/tuix/tuix"
+
 // screen.go is the screen stack manager.
 // It reads and writes the shared appState declared in state.go.
 // All functions here are package-level so app.go can wire them
@@ -18,8 +20,7 @@ func PushScreen(screenID string) {
 	state.screenStack = append(state.screenStack, screenID)
 	state.currentPage = screenID
 
-	// tuix.Debug("After push - currentPage:", state.currentPage)
-	// tuix.Debug("After push - screenStack:", state.screenStack)
+	tuix.ResetComponentState()
 }
 
 // PopScreen removes the top screen and returns the new current screen ID.
@@ -33,6 +34,8 @@ func PopScreen() string {
 	state.screenStack = state.screenStack[:len(state.screenStack)-1]
 	top := state.screenStack[len(state.screenStack)-1]
 	state.currentPage = top
+
+	tuix.ResetComponentState()
 	return top
 }
 
@@ -51,8 +54,10 @@ func GetCurrentScreen() string {
 	state.mu.RLock()
 	defer state.mu.RUnlock()
 
-	// tuix.Debug("GetCurrentScreen called, returning:", state.currentPage)
-	return state.currentPage
+	if len(state.screenStack) == 0 {
+		return "home"
+	}
+	return state.screenStack[len(state.screenStack)-1]
 }
 
 // ReplaceScreen replaces the top of the stack with a new screen.

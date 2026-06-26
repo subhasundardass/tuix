@@ -21,7 +21,7 @@ func App(props tuix.Props) tuix.Element {
 
 	tuix.UseEffect(func() func() {
 		// set initial focus
-		tuix.Focus(nameID)
+		tuix.SetFocus(nameID)
 		return nil
 	}, []any{})
 
@@ -42,11 +42,11 @@ func App(props tuix.Props) tuix.Element {
 	switch {
 	case tuix.IsFocused(nameID) && tuix.CurrentKey.Code == tuix.KeyEnter:
 		tuix.Debug("Enter Pressed in Name → focusing Age")
-		tuix.Focus(ageID)
+		tuix.SetFocus(ageID)
 
 	case tuix.IsFocused(ageID) && tuix.CurrentKey.Code == tuix.KeyEnter:
 		tuix.Debug("Enter Pressed in Age → focusing Submit")
-		tuix.Focus(submitID)
+		tuix.SetFocus(submitID)
 
 	case tuix.IsFocused(submitID) && tuix.CurrentKey.Code == tuix.KeyEnter:
 		tuix.Debug("Submit pressed!")

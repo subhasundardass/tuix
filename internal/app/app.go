@@ -36,6 +36,8 @@ func Root(props tuix.Props) tuix.Element {
 		GetCurrent:    GetCurrentScreen,
 	})
 
+	tuix.SetFocusOrder([]string{"sidebar", "content"})
+
 	// ── Global keypresses ─────────────────────────────────────────────────────
 
 	// // F1 — open About window
@@ -59,6 +61,15 @@ func Root(props tuix.Props) tuix.Element {
 	// 	tuix.CloseCurrent()
 	// }
 
+	// ── Focus ────────────────────────────────────────────────────────────────
+	if tuix.CurrentFocus() == "" {
+		tuix.SetFocus("sidebar")
+	}
+	// Handle Tab key
+	if tuix.CurrentKey.Code == tuix.KeyTab {
+		tuix.FocusNext()
+	}
+
 	// Handle Escape
 	if tuix.CurrentKey.Code == tuix.KeyEscape {
 		popped := ctx.PopScreen()
@@ -79,6 +90,8 @@ func Root(props tuix.Props) tuix.Element {
 		content = tuix.Text("404 - Page Not Found", tuix.NewStyle().Foreground(tuix.Red))
 	} else {
 		// Render the screen with context
+		contentFocused := tuix.IsFocused("content")
+		tuix.Debug("Rendering screen:", currentID, "Content focused:", contentFocused)
 		content = screen.Render(ctx, tuix.Props{})
 	}
 
@@ -92,21 +105,12 @@ func Root(props tuix.Props) tuix.Element {
 	// case "home":
 	// 	content = screen.HomePage(ctx, tuix.Props{})
 	// case "settings":
-	// 	content = screen.SettingsPage(tuix.Props{})
+	// 	content = screen.SettingsPage(ctx, tuix.Props{})
 	// case "about":
-	// 	content = screen.AboutPage(tuix.Props{})
+	// 	content = screen.AboutPage(ctx, tuix.Props{})
 	// default:
 	// 	content = tuix.Text("404 - Page Not Found", tuix.NewStyle())
 	// }
-	// ── Focus ────────────────────────────────────────────────────────────────
-	tuix.SetFocusOrder([]string{"sidebar", "content"})
-	if ctx.GetCurrent() == "" {
-		tuix.Focus("sidebar")
-	}
-	// Handle Tab key
-	if tuix.CurrentKey.Code == tuix.KeyTab {
-		tuix.FocusNext()
-	}
 
 	// ── Layout ────────────────────────────────────────────────────────────────
 	mainLayout := layout.MasterLayout(ctx, layout.LayoutProps{
@@ -124,6 +128,5 @@ func Root(props tuix.Props) tuix.Element {
 		},
 		tuix.NewStyle(),
 		mainLayout,
-		// tuix.RenderWindows(),
 	)
 }

@@ -109,6 +109,8 @@ func App(props tuix.Props) tuix.Element {
 					),
 				),
 
+				components.Spinner("Spinner...."),
+
 				// 3. Age (NumberInput)
 				renderField("Age", 2,
 					components.NumberInput(
@@ -198,6 +200,10 @@ func App(props tuix.Props) tuix.Element {
 					),
 					tuix.Text("I agree to terms", tuix.NewStyle().Foreground(tuix.White)),
 				),
+
+				components.Spinner("Spinner...."),
+				components.Badge("Badge", tuix.Green, tuix.Blue),
+				components.ProgressBar(100.00, 100.00, tuix.Green),
 
 				// 8. Submit Button
 				tuix.Box(

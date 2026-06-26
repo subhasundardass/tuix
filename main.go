@@ -2,7 +2,6 @@ package main
 
 import (
 	"github.com/subhasundardass/tuix/tuix"
-	"github.com/subhasundardass/tuix/tuix/components"
 )
 
 // Theme is the value carried by ThemeContext. Components anywhere in the
@@ -99,21 +98,21 @@ func WrappedTextDemo() tuix.Element {
 	)
 }
 
-func InputDemo() tuix.Element {
-	value, setValue := tuix.UseState("edit me")
+// func InputDemo() tuix.Element {
+// 	value, setValue := tuix.UseState("edit me")
 
-	return tuix.Box(
-		tuix.Props{Direction: tuix.Column, Gap: 1, Width: tuix.Grow(1)},
-		tuix.NewStyle(),
-		tuix.Text(
-			"Input demo: use ←/→ to move cursor; type/paste inserts at cursor",
-			tuix.NewStyle().Foreground(tuix.BrightBlack),
-		),
-		components.Input(true, value, func(value string) {
-			setValue(value)
-		}),
-	)
-}
+// 	return tuix.Box(
+// 		tuix.Props{Direction: tuix.Column, Gap: 1, Width: tuix.Grow(1)},
+// 		tuix.NewStyle(),
+// 		tuix.Text(
+// 			"Input demo: use ←/→ to move cursor; type/paste inserts at cursor",
+// 			tuix.NewStyle().Foreground(tuix.BrightBlack),
+// 		),
+// 		components.Input(true, value, func(value string) {
+// 			setValue(value)
+// 		}),
+// 	)
+// }
 
 func App(props tuix.Props) tuix.Element {
 	dark, setDark := tuix.UseState(false)
@@ -153,7 +152,7 @@ func App(props tuix.Props) tuix.Element {
 				"Toggle the theme; both update without taking a theme prop.",
 			),
 			WrappedTextDemo(),
-			InputDemo(),
+			// InputDemo(),
 			Footer(),
 		)
 	})
