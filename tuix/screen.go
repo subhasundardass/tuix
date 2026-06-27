@@ -298,6 +298,14 @@ func (s *Screen) Flush() {
 	startCol := s.minDirtyCol
 	endCol := s.maxDirtyCol
 
+	// If dirty but no region tracked, flush the whole screen
+	if startRow == -1 && s.dirty {
+		startRow = 0
+		endRow = s.height - 1
+		startCol = 0
+		endCol = s.width - 1
+	}
+
 	if startRow < 0 {
 		startRow = 0
 	}
