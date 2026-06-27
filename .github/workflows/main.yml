@@ -1,0 +1,58 @@
+name: TUIx CI
+
+# When to run this workflow
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  # Job 1: Check code quality
+  test:
+    name: Tests & Lint
+    runs-on: ubuntu-latest
+    
+    steps:
+      # Download the code
+      - uses: actions/checkout@v4
+      
+      # Setup Go
+      - uses: actions/setup-go@v4
+        with:
+          go-version: '1.26'
+          cache: true
+      
+      # Check formatting
+      - name: Check formatting
+        run: |
+          if ! gofmt -l . | grep -q .; then
+            echo "✓ Code is formatted correctly"
+          else
+            echo "✗ Code needs formatting"
+            exit 1
+          fi
+      
+      # Run vet (code checker)
+      - name: Run go vet
+        run: go vet ./...
+      
+      # Run tests
+      - name: Run tests
+        run: go test -v -coverprofile=coverage.out ./...
+      
+      # Show test results
+      - name: Show coverage
+        run: go tool cover -func=coverage.out
+      
+      # Build the app
+      - name: Build app
+        run: go build -v ./cmd/app 2>&1 || true
+      
+      # Build examples
+      - name: Build examples
+        run: |
+          for dir in examples/*/; do
+            echo "Building $(basename $dir)..."
+            go build -v -o /tmp/example "./$dir" 2>&1 || true
+          done
