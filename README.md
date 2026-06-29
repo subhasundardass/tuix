@@ -23,6 +23,10 @@ Tuix brings the declarative, composable model of React — functional components
 
 ---
 
+## Architecture
+
+<img src="Architecture.png" alt="Tuix Framework" width="700"/>
+
 ## Installation
 
 ```bash
@@ -117,10 +121,6 @@ Everything beyond the quick start lives in **[DOCS.md](DOCS.md)**:
 - [API reference index](DOCS.md#api-reference-index)
 
 ---
-
-## Architecture
-
-<img src="Architecture.png" alt="Tuix Framework" width="700"/>
 
 **Hooks cursor pattern:** State is identified by call order within a render, not by name. This is why hooks must never be called conditionally — the nth `UseState` call always corresponds to the same state slot.
 
