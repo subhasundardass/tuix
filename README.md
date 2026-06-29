@@ -9,7 +9,7 @@ Tuix brings the declarative, composable model of React — functional components
 
 ---
 
-<img src="image.png" alt="Tuix Framework" width="700"/>
+<img src="Screencast_1.gif" alt="Tuix Framework" width="700"/>
 ## Features
 
 - **Functional components** — plain Go functions that return an `Element` tree

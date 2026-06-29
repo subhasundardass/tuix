@@ -11,6 +11,7 @@ import (
 type App struct {
 	screen   *Screen
 	renderer *ComponentRenderer
+	focus    *FocusManager
 }
 
 // NewApp creates and initializes a new terminal application.
@@ -32,23 +33,7 @@ type App struct {
 // automatically expanded to the real terminal viewport, regardless of
 // the values passed to this constructor.
 //
-// Example:
-//
-//	app := tuix.NewApp(80, 24)
-//	defer app.Stop()
-//
-//	app.Render(func() tuix.Element {
-//	    return tuix.Text("Hello, TUIX!")
-//	})
-//
-//	app.Run()
-//
-// Example using automatic terminal sizing:
-//
-//	app := tuix.NewApp(0, 0)
-//	defer app.Stop()
-//
-//	app.Run()
+
 func NewApp(width, height int) *App {
 
 	screen := NewScreenWriter(width, height, os.Stdout)
@@ -68,6 +53,7 @@ func NewApp(width, height int) *App {
 	return &App{
 		screen:   screen,
 		renderer: renderer,
+		focus:    globalFocus,
 	}
 }
 
@@ -85,13 +71,13 @@ func Exit() {
 }
 
 func (a *App) Run(fn func(props Props) Element, props Props) {
-	a.Render(fn, props)
 
-	select {
-	case <-exitCh:
-	default:
-	}
+	//Start the screen
+	a.screen.Start()
+	defer a.screen.Stop() //ALWAYS restore terminal on exit
 
+	//Exit channel for graceful shutdown
+	// exitCh := make(chan struct{})
 	quit := make(chan struct{})
 	var quitOnce sync.Once
 	requestQuit := func() {
@@ -101,15 +87,24 @@ func (a *App) Run(fn func(props Props) Element, props Props) {
 	resize := make(chan os.Signal, 1)
 	signal.Notify(resize, syscall.SIGWINCH)
 
+	//Ticker for periodic updates
+	ticker := make(chan bool, 1)
 	go func() {
 		tick := false
 		for {
 			time.Sleep(time.Millisecond * 500)
 			tick = !tick
-			ticker <- tick
+			select {
+			case ticker <- tick:
+			case <-quit: // ← stop goroutine when app exits
+				return
+			default:
+				// Channel full, skip
+			}
 		}
 	}()
 
+	//Keyboard input handler
 	go func() {
 		buf := make([]byte, 1024)
 		var scanner KeyScanner
@@ -129,10 +124,14 @@ func (a *App) Run(fn func(props Props) Element, props Props) {
 		}
 	}()
 
+	//Initial render
+	a.Render(fn, props)
+
+	//Main event loop
 	for {
 		select {
 		case <-quit:
-			a.screen.Stop()
+			// a.screen.Stop()
 			return
 		case <-exitCh:
 			requestQuit()

@@ -2,32 +2,72 @@ package main
 
 import (
 	"fmt"
-	"strings"
 
 	"github.com/subhasundardass/tuix/tuix"
 	"github.com/subhasundardass/tuix/tuix/components"
 )
 
 func App(props tuix.Props) tuix.Element {
-	formData, setFormData := tuix.UseState(make(map[string]string))
+	// State
+	name, setName := tuix.UseState("")
+	email, setEmail := tuix.UseState("")
+	age, setAge := tuix.UseState("")
+	salary, setSalary := tuix.UseState("")
+	birthdate, setBirthdate := tuix.UseState("")
+	joiningdate, setJoiningDate := tuix.UseState("")
+	agree, setAgree := tuix.UseState(false)
+	// gender, setGender := tuix.UseState("Male")
 	submitted, setSubmitted := tuix.UseState(false)
 
+	// Focus management
+	focusIndex, setFocusIndex := tuix.UseState(0)
+	totalFields := 9
+
+	// Styles
 	title := tuix.NewStyle().Bold(true).Foreground(tuix.BrightCyan)
 	dim := tuix.NewStyle().Foreground(tuix.BrightBlack)
 	body := tuix.NewStyle().Foreground(tuix.BrightWhite)
 	success := tuix.NewStyle().Foreground(tuix.BrightGreen).Bold(true)
 
-	handleSubmit := func(data map[string]string) {
-		setFormData(data)
-		setSubmitted(true)
+	// Navigation
+	switch tuix.CurrentKey.Code {
+	case tuix.KeyDown:
+		setFocusIndex((focusIndex + 1) % totalFields)
+	case tuix.KeyUp:
+		setFocusIndex((focusIndex - 1 + totalFields) % totalFields)
+	case tuix.KeyEnter:
+		if focusIndex == totalFields-1 {
+			// Submit
+			if name != "" && email != "" && age != "" && salary != "" && birthdate != "" && joiningdate != "" && agree {
+				setSubmitted(true)
+			}
+		} else {
+			setFocusIndex((focusIndex + 1) % totalFields)
+		}
+	}
+
+	isFocused := func(idx int) bool { return focusIndex == idx }
+
+	// Helper: render field row
+	renderField := func(label string, fieldIndex int, input tuix.Element) tuix.Element {
+		return tuix.Box(
+			tuix.Props{Direction: tuix.Row, Gap: 1},
+			tuix.NewStyle(),
+			tuix.Box(
+				tuix.Props{Width: tuix.Fixed(30)},
+				tuix.NewStyle(),
+				tuix.Text(label+":", tuix.NewStyle().Foreground(tuix.BrightWhite)),
+			),
+			input,
+		)
 	}
 
 	return tuix.Box(
-
-		tuix.Props{Direction: tuix.Column, Gap: 1, Padding: [4]int{1, 1, 1, 1}, Width: tuix.Grow(1)},
+		tuix.Props{Direction: tuix.Column, Gap: 0, Padding: [4]int{1, 1, 1, 1}, Width: tuix.Grow(1)},
 		tuix.NewStyle(),
 		tuix.Text("◆ Registration Form", title),
 
+		// Form Fields
 		tuix.Box(
 			tuix.Props{Direction: tuix.Column, Width: tuix.Grow(1)},
 			tuix.NewStyle().Border(tuix.Border{
@@ -35,13 +75,167 @@ func App(props tuix.Props) tuix.Element {
 				Chars: tuix.BorderSharp,
 				Title: "User Information",
 			}),
-			func() tuix.Element {
-				return ExampleForm(ExampleFormProps{
-					OnSubmit: handleSubmit,
-				})
-			}(),
+			tuix.Box(
+				tuix.Props{Direction: tuix.Column, Gap: 0, Padding: [4]int{1, 2, 2, 2}},
+				tuix.NewStyle().Background(tuix.Black),
+
+				// 1. Name (TextInput)
+				renderField("Name", 0,
+					components.TextInput(
+						isFocused(0),
+						components.WithID("name"),
+						components.WithValue(name),
+						components.WithWidth(30),
+						components.WithPrefix("[ "),
+						components.WithSuffix(" ]"),
+						components.WithOnChange(func(id, value string) {
+							setName(value)
+						}),
+					),
+				),
+
+				// 2. Email (TextInput)
+				renderField("Email", 1,
+					components.TextInput(
+						isFocused(1),
+						components.WithID("email"),
+						components.WithValue(email),
+						components.WithWidth(30),
+						components.WithPrefix("[ "),
+						components.WithSuffix(" ]"),
+						components.WithOnChange(func(id, value string) {
+							setEmail(value)
+						}),
+					),
+				),
+
+				components.Spinner("Spinner...."),
+
+				// 3. Age (NumberInput)
+				renderField("Age", 2,
+					components.NumberInput(
+						isFocused(2),
+						components.NumberWithID("age"),
+						components.NumberWithValue(age),
+						components.NumberWithWidth(10),
+						components.NumberWithPlaceholder("0"),
+						components.NumberWithPrefix("[ "),
+						components.NumberWithSuffix(" ]"),
+						components.NumberWithDecimal(0),
+						components.NumberWithMin(0),
+						components.NumberWithMax(150),
+						components.NumberWithOnChange(func(id, value string) {
+							setAge(value)
+						}),
+					),
+				),
+
+				// 4. Salary (NumberInput with decimals)
+				renderField("Salary", 3,
+					components.NumberInput(
+						isFocused(3),
+						components.NumberWithID("salary"),
+						components.NumberWithValue(salary),
+						components.NumberWithWidth(15),
+						components.NumberWithPlaceholder("0.00"),
+						components.NumberWithPrefix("[ $ "),
+						components.NumberWithSuffix(" ]"),
+						components.NumberWithDecimal(2),
+						components.NumberWithMin(0),
+						components.NumberWithMax(999999.99),
+						components.NumberWithOnChange(func(id, value string) {
+							setSalary(value)
+						}),
+					),
+				),
+
+				// 5. Birth Date (DateInput)
+				renderField("Birth Date", 4,
+					components.DateInput(
+						isFocused(4),
+						components.DateWithID("birthday"),
+						components.DateWithValue(birthdate),
+						components.DateWithFormat("DD/MM/YYYY"),
+						components.DateWithPrefix("[ "),
+						components.DateWithSuffix(" ]"),
+						components.DateWithWidth(15),
+						components.DateWithPlaceholder("DD/MM/YYYY"),
+						components.DateWithOnChange(func(id, value string) {
+							setBirthdate(value)
+						}),
+					),
+				),
+
+				// 6. Joining Date (DateInput)
+				renderField("Joining Date", 5,
+					components.DateInput(
+						isFocused(5),
+						components.DateWithID("joiningtdate"),
+						components.DateWithValue(joiningdate),
+						components.DateWithFormat("DD/MM/YYYY"),
+						components.DateWithPrefix("[ "),
+						components.DateWithSuffix(" ]"),
+						components.DateWithWidth(15),
+						components.DateWithPlaceholder("DD/MM/YYYY"),
+						components.DateWithOnChange(func(id, value string) {
+							setJoiningDate(value)
+						}),
+					),
+				),
+
+				// 7. Checkbox
+				tuix.Box(
+					tuix.Props{Direction: tuix.Row, Gap: 1},
+					tuix.NewStyle(),
+					tuix.Box(
+						tuix.Props{Width: tuix.Fixed(30)},
+						tuix.NewStyle(),
+						tuix.Text("", tuix.NewStyle()),
+					),
+					components.Checkbox(
+						isFocused(6),
+						func(checked bool) {
+							setAgree(checked)
+						},
+					),
+					tuix.Text("I agree to terms", tuix.NewStyle().Foreground(tuix.White)),
+				),
+
+				components.Spinner("Spinner...."),
+				components.Badge("Badge", tuix.Green, tuix.Blue),
+				components.ProgressBar(100.00, 100.00, tuix.Green),
+
+				// 8. Submit Button
+				tuix.Box(
+					tuix.Props{Direction: tuix.Row},
+					tuix.NewStyle(),
+					tuix.Box(
+						tuix.Props{Width: tuix.Fixed(31)},
+						tuix.NewStyle(),
+						tuix.Text("", tuix.NewStyle()),
+					),
+					components.Button("Submit", isFocused(7)),
+				),
+
+				// 9. Select Option
+				tuix.Box(
+					tuix.Props{Direction: tuix.Row},
+					tuix.NewStyle(),
+					tuix.Box(
+						tuix.Props{Width: tuix.Fixed(31)},
+						tuix.NewStyle(),
+						tuix.Text("", tuix.NewStyle()),
+					),
+					components.SelectPicker([]string{"Male", "Female"}, isFocused(8)),
+				),
+
+				tuix.Text("", tuix.NewStyle()),
+				tuix.Text("↓/↑: Navigate  |  Enter: Next/Submit ",
+					tuix.NewStyle().Foreground(tuix.BrightBlack)),
+			),
 		),
 
+		// Preview
 		tuix.Box(
 			tuix.Props{Direction: tuix.Column, Padding: [4]int{0, 1, 0, 1}, Width: tuix.Grow(1)},
 			tuix.NewStyle().Border(tuix.Border{
@@ -49,264 +243,27 @@ func App(props tuix.Props) tuix.Element {
 				Chars: tuix.BorderRounded, Title: "Output",
 			}),
 			tuix.Text("📋 Form Preview", tuix.NewStyle().Bold(true).Foreground(tuix.BrightCyan)),
-
 			func() tuix.Element {
-				if submitted {
-					return tuix.Box(
-						tuix.Props{Direction: tuix.Column, Gap: 0},
-						tuix.NewStyle(),
-						tuix.Text("Submitted successfully!", success),
-						tuix.Text(fmt.Sprintf("  Name: %s", formData["name"]), body),
-						tuix.Text(fmt.Sprintf("  Email: %s", formData["email"]), body),
-						tuix.Text(fmt.Sprintf("  Age: %s", formData["age"]), body),
-						tuix.Text(fmt.Sprintf("  Salary: $%s", formData["salary"]), body),
-						tuix.Text(fmt.Sprintf("  Birth Date: %s", formData["birthdate"]), body),
-						tuix.Text(fmt.Sprintf("  Joining Date: %s", formData["joiningdate"]), body),
-						tuix.Text(fmt.Sprintf("  Agreed: %s", formData["agree"]), body),
-					)
+				if !submitted {
+					return tuix.Text("  Waiting for submission...", dim)
 				}
-				return tuix.Text("  Waiting for submission...", dim)
+				return tuix.Box(
+					tuix.Props{Direction: tuix.Column, Gap: 0},
+					tuix.NewStyle(),
+					tuix.Text("✅ Submitted successfully!", success),
+					tuix.Text(fmt.Sprintf("  Name: %s", name), body),
+					tuix.Text(fmt.Sprintf("  Email: %s", email), body),
+					tuix.Text(fmt.Sprintf("  Age: %s", age), body),
+					tuix.Text(fmt.Sprintf("  Salary: $%s", salary), body),
+					tuix.Text(fmt.Sprintf("  Birth Date: %s", birthdate), body),
+					tuix.Text(fmt.Sprintf("  Joining Date: %s", joiningdate), body),
+					tuix.Text(fmt.Sprintf("  Agreed: %v", agree), body),
+				)
 			}(),
 		),
 
 		tuix.Text("ctrl-c to quit", dim),
 	)
-}
-
-type ExampleFormProps struct {
-	OnSubmit func(map[string]string)
-}
-
-// ExampleForm - Manual rendering with Box + Label + Input
-// NO NAVIGATION HERE - Form handles everything!
-func ExampleForm(props ExampleFormProps) tuix.Element {
-	// Fields definition ONLY - NO duplicate state!
-	fields := []components.Field{
-		{ID: "name", Label: "Name", Type: components.FieldTypeText},
-		{ID: "email", Label: "Email", Type: components.FieldTypeText},
-		{ID: "age", Label: "Age", Type: components.FieldTypeNumber},
-		{ID: "salary", Label: "Salary", Type: components.FieldTypeNumber},
-		{ID: "birthdate", Label: "Birth Date", Type: components.FieldTypeDate},
-		{ID: "joiningdate", Label: "Joining Date", Type: components.FieldTypeDate},
-		{ID: "agree", Label: "I agree to terms", Type: components.FieldTypeCheckbox},
-		{ID: "submit", Label: "Submit", Type: components.FieldTypeButton},
-	}
-
-	return components.Form(components.FormProps{
-		Fields: fields,
-		Width:  55,
-		OnSubmit: func(data map[string]string) {
-			if props.OnSubmit != nil {
-				props.OnSubmit(data)
-			}
-		},
-		OnValidate: func(data map[string]string) map[string]string {
-			errors := make(map[string]string)
-
-			if strings.TrimSpace(data["name"]) == "" {
-				errors["name"] = "Name is required"
-			}
-			if data["email"] == "" || !strings.Contains(data["email"], "@") {
-				errors["email"] = "Valid email is required"
-			}
-			if data["age"] == "" || data["age"] == "0" {
-				errors["age"] = "Age is required"
-			}
-			if data["salary"] == "" || data["salary"] == "0.00" {
-				errors["salary"] = "Salary is required"
-			}
-			if data["birthdate"] == "" {
-				errors["birthdate"] = "Birth date is required"
-			}
-			if data["joiningdate"] == "" {
-				errors["joiningdate"] = "Joining date is required"
-			}
-			if data["agree"] != "true" {
-				errors["agree"] = "You must agree to terms"
-			}
-
-			return errors
-		},
-		// Custom render function - Form manages state internally
-		RenderFunc: func(focusedIndex int, setFocused func(int), formData map[string]string, setFormData func(map[string]string)) tuix.Element {
-			isFocused := func(idx int) bool { return focusedIndex == idx }
-
-			// Get values from formData (Form's internal state)
-			name := formData["name"]
-			email := formData["email"]
-			age := formData["age"]
-			salary := formData["salary"]
-			birthdate := formData["birthdate"]
-			joiningdate := formData["joiningdate"]
-			// agree := formData["agree"] == "true"
-
-			return tuix.Box(
-				tuix.Props{
-					Direction: tuix.Column,
-					Gap:       0,
-					Padding:   [4]int{1, 2, 2, 2},
-				},
-				tuix.NewStyle().Background(tuix.Black),
-
-				// 0: Name
-				tuix.Box(
-					tuix.Props{Direction: tuix.Row, Gap: 1},
-					tuix.NewStyle(),
-					tuix.Box(
-						tuix.Props{Width: tuix.Fixed(30)},
-						tuix.NewStyle(),
-						tuix.Text("Name:", tuix.NewStyle().Foreground(tuix.BrightWhite)), // ← Colon at end
-					),
-					components.Input(
-						isFocused(0),
-						name,
-						func(v string) {
-							formData["name"] = v
-							setFormData(formData)
-						},
-					),
-				),
-
-				// 1: Email
-				tuix.Box(
-					tuix.Props{Direction: tuix.Row, Gap: 1},
-					tuix.NewStyle(),
-					tuix.Box(
-						tuix.Props{Direction: tuix.Row, Gap: 1, Width: tuix.Fixed(30)},
-						tuix.NewStyle(),
-						tuix.Text("Email", tuix.NewStyle().Foreground(tuix.White)),
-					),
-					components.Input(
-						isFocused(1),
-						email,
-						func(v string) {
-							formData["email"] = v
-							setFormData(formData)
-						},
-					),
-				),
-
-				// 2: Age
-				tuix.Box(
-					tuix.Props{Direction: tuix.Row, Gap: 1},
-					tuix.NewStyle(),
-					tuix.Box(
-						tuix.Props{Direction: tuix.Row, Gap: 1, Width: tuix.Fixed(30)},
-						tuix.NewStyle(),
-						tuix.Text("Age", tuix.NewStyle().Foreground(tuix.White)),
-					),
-					components.NumberInput(components.NumberInputProps{
-						Value:       age,
-						Focused:     isFocused(2),
-						Decimal:     0,
-						Min:         nil,
-						Max:         nil,
-						Placeholder: "0",
-						Width:       10,
-						OnChange: func(v string) {
-							formData["age"] = v
-							setFormData(formData)
-						},
-					}),
-				),
-
-				// 3: Salary
-				tuix.Box(
-					tuix.Props{Direction: tuix.Row, Gap: 1},
-					tuix.NewStyle(),
-					tuix.Box(
-						tuix.Props{Direction: tuix.Row, Gap: 1, Width: tuix.Fixed(30)},
-						tuix.NewStyle(),
-						tuix.Text("Salary", tuix.NewStyle().Foreground(tuix.White)),
-					),
-					components.NumberInput(components.NumberInputProps{
-						Value:       salary,
-						Focused:     isFocused(3),
-						Decimal:     2,
-						Min:         nil,
-						Max:         nil,
-						Placeholder: "0.00",
-						Width:       15,
-						OnChange: func(v string) {
-							formData["salary"] = v
-							setFormData(formData)
-						},
-					}),
-				),
-
-				// 4: Birth Date
-				tuix.Box(
-					tuix.Props{Direction: tuix.Row, Gap: 1},
-					tuix.NewStyle(),
-					tuix.Box(
-						tuix.Props{Direction: tuix.Row, Gap: 1, Width: tuix.Fixed(30)},
-						tuix.NewStyle(),
-						tuix.Text("Birth Date", tuix.NewStyle().Foreground(tuix.White)),
-					),
-					components.DateInput(components.DateInputProps{
-						Value:       birthdate,    // ✅ Passing state value
-						Focused:     isFocused(4), // ✅ Proper focus control
-						Mask:        "DD-MM-YYYY", // ✅ Valid mask
-						Placeholder: "DD-MM-YYYY", // ✅ Helpful placeholder
-						OnChange: func(v string) { // ✅ Callback works
-							formData["birthdate"] = v
-							setFormData(formData)
-						},
-					}),
-				),
-
-				// 5: Joining Date
-				tuix.Box(
-					tuix.Props{Direction: tuix.Row, Gap: 1},
-					tuix.NewStyle(),
-					tuix.Box(
-						tuix.Props{Direction: tuix.Row, Gap: 1, Width: tuix.Fixed(30)},
-						tuix.NewStyle(),
-						tuix.Text("Joining Date", tuix.NewStyle().Foreground(tuix.White)),
-					),
-					components.DateInput(components.DateInputProps{
-						Value:       joiningdate,  // ✅ Passing state value
-						Focused:     isFocused(5), // ✅ Proper focus control
-						Mask:        "DD-MM-YYYY", // ✅ Valid mask
-						Placeholder: "DD-MM-YYYY", // ✅ Helpful placeholder
-						OnChange: func(v string) { // ✅ Callback works
-							formData["joiningdate"] = v
-							setFormData(formData)
-						},
-					}),
-				),
-
-				// 6: Checkbox
-				tuix.Box(
-					tuix.Props{Direction: tuix.Row, Gap: 1},
-					tuix.NewStyle(),
-					components.Checkbox(
-						isFocused(6),
-						func(checked bool) {
-							if checked {
-								formData["agree"] = "true"
-							} else {
-								formData["agree"] = "false"
-							}
-							setFormData(formData)
-						},
-					),
-					tuix.Text("I agree to terms", tuix.NewStyle().Foreground(tuix.White)),
-				),
-
-				// 7: Submit Button
-				tuix.Box(
-					tuix.Props{Direction: tuix.Row},
-					tuix.NewStyle(),
-					components.Button("Submit", isFocused(7)),
-				),
-
-				tuix.Text("", tuix.NewStyle()),
-				tuix.Text("↓/↑: Navigate  |  Enter: Next/Submit ",
-					tuix.NewStyle().Foreground(tuix.BrightBlack)),
-			)
-		},
-	})
 }
 
 func main() {

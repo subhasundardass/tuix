@@ -34,74 +34,6 @@ const (
 //   - Forms and dashboards
 //   - Nested flexbox-style UIs
 //
-// Example:
-//
-//	app := Box(
-//		Props{
-//			Direction: Column,
-//			Gap:       1,
-//			Padding:   [4]int{1, 2, 1, 2},
-//			Width:     Grow(1),
-//			Height:    Grow(1),
-//		},
-//		NewStyle(),
-//		Text("Header"),
-//		Text("Content"),
-//		Text("Footer"),
-//	)
-//
-// Row layout:
-//
-//	row := Box(
-//		Props{
-//			Direction: Row,
-//			Gap:       2,
-//		},
-//		NewStyle(),
-//		Text("Left"),
-//		Text("Center"),
-//		Text("Right"),
-//	)
-//
-// Sidebar layout:
-//
-//	layout := Box(
-//		Props{
-//			Direction: Row,
-//			Width:     Grow(1),
-//			Height:    Grow(1),
-//		},
-//		NewStyle(),
-//		Box(
-//			Props{
-//				Width: Fixed(30),
-//			},
-//			sidebarStyle,
-//			...,
-//		),
-//		Box(
-//			Props{
-//				Width: Grow(1),
-//			},
-//			mainStyle,
-//			...,
-//		),
-//	)
-//
-// Padding order follows CSS conventions:
-//
-//	[top, right, bottom, left]
-//
-// Example:
-//
-//	Padding: [4]int{1, 2, 1, 2}
-//
-// is equivalent to:
-//
-//	padding-top:    1
-//	padding-right:  2
-//	padding-bottom: 1
-//	padding-left:   2
 
 func Box(props Props, style Style, children ...Element) Element {
 	width := props.Width
@@ -173,6 +105,14 @@ func If(condition bool, choice1 Element, choice2 Element) Element {
 		return choice1
 	}
 	return choice2
+}
+
+// ColorIf returns color1 if condition is true, otherwise color2
+func ColorIf(condition bool, color1, color2 Color) Color {
+	if condition {
+		return color1
+	}
+	return color2
 }
 
 // Markdown renders a markdown string with rich formatting including headers,

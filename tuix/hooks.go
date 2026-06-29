@@ -81,15 +81,17 @@ func UseEffect(fn func() func(), deps []any) {
 	newEffect := Effect{fn: fn, deps: deps, dirty: true}
 
 	if idx >= len(Effects) {
+		//New effect - append
 		Effects = append(Effects, newEffect)
 		return
 	}
 
-	// Only mark dirty if at least one dep actually changed.
-	changed := len(Effects[idx].deps) != len(newEffect.deps)
+	//Existing effect - check if deps changed
+	existing := &Effects[idx]
+	changed := len(existing.deps) != len(newEffect.deps)
 	if !changed {
 		for i, dep := range newEffect.deps {
-			if !reflect.DeepEqual(Effects[idx].deps[i], dep) {
+			if !reflect.DeepEqual(existing.deps[i], dep) {
 				changed = true
 				break
 			}
@@ -97,10 +99,13 @@ func UseEffect(fn func() func(), deps []any) {
 	}
 
 	if changed {
-		Effects[idx].fn = newEffect.fn
-		Effects[idx].dirty = true
+		//Keep the old cleanup - RunEffects will call it
+		existing.dirty = true
+		existing.fn = newEffect.fn
+		existing.deps = newEffect.deps
+	} else {
+		existing.dirty = false
 	}
-	Effects[idx].deps = newEffect.deps
 }
 
 // RunEffects runs all effects marked dirty since the last render.
@@ -111,9 +116,11 @@ func RunEffects() {
 		if !Effects[i].dirty {
 			continue
 		}
+		//Call old cleanup if it exists
 		if Effects[i].cleanup != nil {
 			Effects[i].cleanup()
 		}
+		//Run the new effect and store its cleanup
 		Effects[i].cleanup = Effects[i].fn()
 		Effects[i].dirty = false
 	}
@@ -148,4 +155,14 @@ func UseContext[T any](c *Context[T]) T {
 		return c.defaultValue
 	}
 	return c.stack[len(c.stack)-1]
+}
+
+// ResetComponentState clears all positional state slots.
+// Call this whenever the active screen changes so stale state
+// from the previous screen does not corrupt the new screen's slots.
+func ResetComponentState() {
+	State = nil
+	StateCursor = 0
+	Effects = nil
+	EffectCursor = 0
 }

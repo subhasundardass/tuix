@@ -215,9 +215,16 @@ func (s *Screen) Start() {
 //
 //	defer screen.Stop()
 func (s Screen) Stop() {
+
+	//Add nil check for oldState
+	if s.oldState == nil {
+		return
+	}
+
 	fmt.Fprintf(s.out, "\033[?2004l") // bracketed paste off
 	fmt.Fprintf(s.out, "\033[?25h")   // show cursor
 	term.Restore(int(os.Stdin.Fd()), s.oldState)
+
 }
 
 // SetCell writes value/style into cell (x, y). It diffs against the
@@ -296,6 +303,14 @@ func (s *Screen) Flush() {
 	endRow := s.maxDirtyRow
 	startCol := s.minDirtyCol
 	endCol := s.maxDirtyCol
+
+	// If dirty but no region tracked, flush the whole screen
+	if startRow == -1 && s.dirty {
+		startRow = 0
+		endRow = s.height - 1
+		startCol = 0
+		endCol = s.width - 1
+	}
 
 	if startRow < 0 {
 		startRow = 0
@@ -387,6 +402,26 @@ func (s *Screen) clearDirty() {
 	for i := range s.dirtyCols {
 		s.dirtyCols[i] = false
 	}
+}
+
+// ForceMarkAllDirty marks the entire screen as dirty, forcing a full redraw.
+// This is useful after resize operations or when the screen content needs
+// a complete refresh.
+func (s *Screen) ForceMarkAllDirty() {
+	if s == nil {
+		return
+	}
+	s.dirty = true
+	for y := 0; y < s.height; y++ {
+		s.dirtyRows[y] = true
+	}
+	for x := 0; x < s.width; x++ {
+		s.dirtyCols[x] = true
+	}
+	s.minDirtyRow = 0
+	s.maxDirtyRow = s.height - 1
+	s.minDirtyCol = 0
+	s.maxDirtyCol = s.width - 1
 }
 
 // EnsureRoom guarantees that contentH rows fit within the physical
