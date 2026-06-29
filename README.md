@@ -120,24 +120,7 @@ Everything beyond the quick start lives in **[DOCS.md](DOCS.md)**:
 
 ## Architecture
 
-```
-keyboard / ticker
-       │
-       ▼
-   runtime.go          ← event loop, re-render scheduling
-       │
-       ▼
- component tree         ← functional components + hooks
-       │
-       ▼
-  layout engine         ← 2-pass flexbox (measure → layout)
-       │
-       ▼
-   renderer.go          ← element tree → screen cells
-       │
-       ▼
-    screen.go           ← cell diffing → ANSI output → terminal
-```
+<img src="Architecture.png" alt="Tuix Framework" width="700"/>
 
 **Hooks cursor pattern:** State is identified by call order within a render, not by name. This is why hooks must never be called conditionally — the nth `UseState` call always corresponds to the same state slot.
 
