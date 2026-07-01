@@ -81,12 +81,12 @@ func UseEffect(fn func() func(), deps []any) {
 	newEffect := Effect{fn: fn, deps: deps, dirty: true}
 
 	if idx >= len(Effects) {
-		//New effect - append
+		// ⭐ New effect - append
 		Effects = append(Effects, newEffect)
 		return
 	}
 
-	//Existing effect - check if deps changed
+	// ⭐ Existing effect - check if deps changed
 	existing := &Effects[idx]
 	changed := len(existing.deps) != len(newEffect.deps)
 	if !changed {
@@ -99,7 +99,7 @@ func UseEffect(fn func() func(), deps []any) {
 	}
 
 	if changed {
-		//Keep the old cleanup - RunEffects will call it
+		// ⭐ Keep the old cleanup - RunEffects will call it
 		existing.dirty = true
 		existing.fn = newEffect.fn
 		existing.deps = newEffect.deps
@@ -116,11 +116,11 @@ func RunEffects() {
 		if !Effects[i].dirty {
 			continue
 		}
-		//Call old cleanup if it exists
+		// ⭐ Call old cleanup if it exists
 		if Effects[i].cleanup != nil {
 			Effects[i].cleanup()
 		}
-		//Run the new effect and store its cleanup
+		// ⭐ Run the new effect and store its cleanup
 		Effects[i].cleanup = Effects[i].fn()
 		Effects[i].dirty = false
 	}

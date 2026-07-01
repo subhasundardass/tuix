@@ -150,13 +150,13 @@ func DateInput(focused bool, opts ...DateOption) tuix.Element {
 
 	maxDigits := countDigitsInMask(mask)
 
-	// Initialize or sync from parent
+	// ✅ Initialize or sync from parent
 	if rawDigits != config.Value && config.Value != "" {
 		setRawDigits(extractDigitsOnly(config.Value))
 		setCursorPos(len(rawDigits))
 	}
 
-	// Clamp cursor
+	// ✅ Clamp cursor
 	if cursorPos < 0 {
 		setCursorPos(0)
 	}
@@ -164,7 +164,7 @@ func DateInput(focused bool, opts ...DateOption) tuix.Element {
 		setCursorPos(len(rawDigits))
 	}
 
-	// Handle focused key input
+	// ✅ Handle focused key input
 	if focused {
 		key := tuix.CurrentKey
 
@@ -198,7 +198,7 @@ func DateInput(focused bool, opts ...DateOption) tuix.Element {
 			}
 
 		default:
-			// Only accept digits
+			// ✅ Only accept digits
 			if key.Rune >= '0' && key.Rune <= '9' {
 				if len(rawDigits) < maxDigits {
 					newRaw := rawDigits[:cursorPos] + string(key.Rune) + rawDigits[cursorPos:]
@@ -215,10 +215,10 @@ func DateInput(focused bool, opts ...DateOption) tuix.Element {
 		}
 	}
 
-	// Build display with formatting
+	// ✅ Build display with formatting
 	display := buildDateDisplayString(rawDigits, mask, config.Placeholder, focused, cursorPos)
 
-	// Style
+	// ✅ Style
 	var textStyle tuix.Style
 	if focused {
 		textStyle = tuix.NewStyle().

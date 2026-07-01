@@ -347,7 +347,7 @@ func TestIndexOf(t *testing.T) {
 		{"a", 0},
 		{"b", 1},
 		{"c", 2},
-		{"x", -1}, //Not found returns -1
+		{"x", -1}, // ⭐ Not found returns -1
 	}
 
 	for _, tt := range tests {

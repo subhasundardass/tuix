@@ -171,7 +171,18 @@ func ParseKey(b []byte) Key {
 	}
 
 	// ─── Function Keys (F5-F12) with longer sequences ────────────────────
-
+	if len(b) >= 3 && b[0] == 0x1B && b[1] == 'O' {
+		switch b[2] {
+		case 'P':
+			return Key{Code: KeyF1}
+		case 'Q':
+			return Key{Code: KeyF2}
+		case 'R':
+			return Key{Code: KeyF3}
+		case 'S':
+			return Key{Code: KeyF4}
+		}
+	}
 	if len(b) >= 5 && b[0] == 0x1B && b[1] == '[' && b[2] == '1' {
 		switch b[3] {
 		case '5':
@@ -336,7 +347,7 @@ func (s *KeyScanner) Feed(b []byte) []Key {
 			continue
 		}
 		consumed := 1
-		if b[0] == 0x1B && len(b) >= 3 && b[1] == '[' {
+		if b[0] == 0x1B && len(b) >= 3 && (b[1] == '[' || b[1] == 'O') {
 			consumed = 3
 		}
 		keys = append(keys, ParseKey(b[:consumed]))

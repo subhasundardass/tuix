@@ -157,7 +157,7 @@ func TestUseEffect(t *testing.T) {
 	if callCount != 1 {
 		t.Errorf("Expected effect called once, got %d", callCount)
 	}
-	//Check that the effect was executed (dirty should be false after RunEffects)
+	// ⭐ Check that the effect was executed (dirty should be false after RunEffects)
 	if Effects[0].dirty {
 		t.Error("Expected effect to be clean after RunEffects")
 	}

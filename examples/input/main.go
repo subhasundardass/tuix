@@ -214,7 +214,15 @@ func App(props tuix.Props) tuix.Element {
 						tuix.NewStyle(),
 						tuix.Text("", tuix.NewStyle()),
 					),
-					components.Button("Submit", isFocused(7)),
+					// components.Button("Submit", isFocused(7)),
+					components.Button(
+						isFocused(7),
+						components.WithButtonID("save"),
+						components.WithLabel("Save"),
+						components.WithOnPress(func(id string) {
+							// controller.Save()
+						}),
+					),
 				),
 
 				// 9. Select Option

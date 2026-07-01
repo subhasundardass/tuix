@@ -109,7 +109,7 @@ func (f *FocusManager) Next() {
 		return
 	}
 
-	//FIX: Check if current is in the order
+	// ⭐ FIX: Check if current is in the order
 	start := f.indexOf(f.current)
 	if start == -1 {
 		// Current not in order - start from beginning
@@ -136,7 +136,7 @@ func (f *FocusManager) Prev() {
 		return
 	}
 
-	//FIX: Check if current is in the order
+	// ⭐ FIX: Check if current is in the order
 	idx := f.indexOf(f.current)
 	if idx == -1 {
 		// Current not in order - start from end

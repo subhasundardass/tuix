@@ -341,12 +341,12 @@ func skipRects(element Element, idx int) int {
 // (element.OverlayX, element.OverlayY), bypassing flow layout completely.
 // Each child is built into its own independent layout tree so ComputeLayout
 // gives it a fresh rect starting at (OverlayX, OverlayY).
+
 func paintOverlayChildren(element Element, screen *Screen, parentStyle Style) {
 	if len(element.Children) == 0 {
 		return
 	}
 
-	// Wrap children in a single anonymous box so they share one layout pass.
 	wrapper := Element{
 		Type:     ElementBox,
 		Style:    element.Style,
@@ -358,11 +358,25 @@ func paintOverlayChildren(element Element, screen *Screen, parentStyle Style) {
 	}
 
 	layoutRoot := buildLayoutTree(wrapper)
+
+	// Measure intrinsic size BEFORE computing layout, and clamp the
+	// available rect to it so Fit() can't expand into leftover screen space.
+	contentW, contentH := IntrinsicSize(layoutRoot)
+
+	maxW := screen.Width() - element.OverlayX
+	maxH := screen.Height() - element.OverlayY
+	if contentW < maxW {
+		maxW = contentW
+	}
+	if contentH < maxH {
+		maxH = contentH
+	}
+
 	available := Rect{
 		X:      element.OverlayX,
 		Y:      element.OverlayY,
-		Width:  screen.Width() - element.OverlayX,
-		Height: screen.Height() - element.OverlayY,
+		Width:  maxW,
+		Height: maxH,
 	}
 	rects := ComputeLayout(layoutRoot, available)
 	paint(wrapper, rects, 0, screen, parentStyle)

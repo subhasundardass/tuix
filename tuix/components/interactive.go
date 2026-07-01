@@ -4,20 +4,6 @@ import (
 	"github.com/subhasundardass/tuix/tuix"
 )
 
-// ─── Button ───────────────────────────────────────────────────────────────
-func Button(label string, focused bool) tuix.Element {
-	var style tuix.Style
-	if focused {
-		style = tuix.NewStyle().
-			Foreground(tuix.Black).
-			Background(tuix.Cyan).
-			Bold(true)
-	} else {
-		style = tuix.NewStyle().Foreground(tuix.White)
-	}
-	return tuix.Text("[ "+label+" ]", style)
-}
-
 // ─── Checkbox (NO LABEL) ──────────────────────────────────────────────────
 func Checkbox(focused bool, onChange func(bool)) tuix.Element {
 	checked, setChecked := tuix.UseState(false)

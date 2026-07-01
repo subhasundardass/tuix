@@ -216,7 +216,7 @@ func (s *Screen) Start() {
 //	defer screen.Stop()
 func (s Screen) Stop() {
 
-	//Add nil check for oldState
+	// ⭐ Add nil check for oldState
 	if s.oldState == nil {
 		return
 	}
