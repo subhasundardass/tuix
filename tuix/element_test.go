@@ -109,7 +109,7 @@ func TestElementWithStyle(t *testing.T) {
 	if !e.Style.IsBold() {
 		t.Error("Expected Bold true")
 	}
-	//Access the foreground field directly (if public)
+	// ⭐ Access the foreground field directly (if public)
 	if e.Style.foreground != Cyan {
 		t.Errorf("Expected Foreground Cyan, got %v", e.Style.foreground)
 	}

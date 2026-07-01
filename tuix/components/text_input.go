@@ -122,8 +122,8 @@ func TextInput(focused bool, opts ...InputOption) tuix.Element {
 		Placeholder: "",
 		Width:       30,
 		Style:       tuix.NewStyle(),
-		Prefix:      "[",
-		Suffix:      "]",
+		Prefix:      "[ ",
+		Suffix:      " ]",
 		MinLength:   0,
 		MaxLength:   0,
 		OnChange:    nil,
@@ -243,7 +243,7 @@ render:
 		textStyle = textStyle.Foreground(tuix.White).Background(tuix.Blue).
 			Bold(true)
 	} else {
-		textStyle = textStyle.Foreground(tuix.BrightBlack)
+		textStyle = textStyle.Foreground(tuix.BrightBlack).Bold(true)
 	}
 
 	// Border color changes based on validation
@@ -298,24 +298,6 @@ render:
 		elements = append(elements, tuix.Text(config.Suffix, bracketStyle))
 	}
 
-	// Show length indicator
-	if focused && config.MaxLength > 0 {
-		lengthText := tuix.Text(
-			" "+string(rune(len(config.Value)+48))+"/"+string(rune(config.MaxLength+48)),
-			tuix.NewStyle().Foreground(tuix.BrightBlack),
-		)
-		return tuix.Box(
-			tuix.Props{Direction: tuix.Row},
-			tuix.NewStyle(),
-			tuix.Box(
-				tuix.Props{Direction: tuix.Row},
-				tuix.NewStyle(),
-				elements...,
-			),
-			lengthText,
-		)
-	}
-
 	return tuix.Box(
 		tuix.Props{
 			Direction: tuix.Row,
@@ -330,6 +312,6 @@ func renderError(config *InputConfig, msg string) tuix.Element {
 	return tuix.Box(
 		tuix.Props{Direction: tuix.Row},
 		tuix.NewStyle(),
-		tuix.Text(""+msg, tuix.NewStyle().Foreground(tuix.Red)),
+		tuix.Text("⚠️ "+msg, tuix.NewStyle().Foreground(tuix.Red)),
 	)
 }

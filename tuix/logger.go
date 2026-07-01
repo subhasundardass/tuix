@@ -31,6 +31,7 @@ type LogLevel int
 
 const (
 	LevelDebug LogLevel = iota
+	LevelSuccess
 	LevelInfo
 	LevelWarn
 	LevelError
@@ -40,6 +41,8 @@ const (
 // String returns the string representation of the log level
 func (l LogLevel) String() string {
 	switch l {
+	case LevelSuccess:
+		return "SUCCESS"
 	case LevelDebug:
 		return "DEBUG"
 	case LevelInfo:
@@ -281,7 +284,7 @@ func Success(args ...interface{}) {
 
 // Successf logs a formatted success message
 func Successf(format string, args ...interface{}) {
-	logMessage(LevelInfo, colorGreen, "✅ "+fmt.Sprintf(format, args...))
+	logMessage(LevelSuccess, colorBlue, "✅ "+fmt.Sprintf(format, args...))
 }
 
 // LogWithFields logs with additional fields (like structured logging)

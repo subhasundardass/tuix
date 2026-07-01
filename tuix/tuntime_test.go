@@ -37,7 +37,7 @@ func TestNewAppDimensions(t *testing.T) {
 // ─── TestAppRender ──────────────────────────────────────────────────────────
 
 func TestAppRender(t *testing.T) {
-	//Don't use defer screen.Stop() - Run handles it
+	// ⭐ Don't use defer screen.Stop() - Run handles it
 	app := NewApp(80, 24)
 
 	// Reset state
@@ -56,7 +56,7 @@ func TestAppRender(t *testing.T) {
 	// Initial render
 	app.Render(testFn, Props{})
 
-	//Render should call the function:
+	// ⭐ Render should call the function:
 	// - Pass 1 (process keys, mutate state)
 	// - Pass 2 (render with updated state)
 	// - If pendingRender is true, a third pass is done

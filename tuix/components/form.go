@@ -226,7 +226,16 @@ func renderCheckboxField(field Field, focused bool, formData map[string]string, 
 }
 
 func renderButtonField(field Field, focused bool) tuix.Element {
-	return Button(field.Label, focused)
+	return Button(
+		focused,
+		WithButtonID(field.ID),
+		WithLabel(field.Label),
+		WithOnPress(func(id string) {
+			if field.OnSubmit != nil {
+				// field.OnPress(id)
+			}
+		}),
+	)
 }
 
 func renderNumberField(field Field, focused bool, value string, formData map[string]string, setFormData func(map[string]string)) tuix.Element {
@@ -343,7 +352,7 @@ func renderErrors(errors map[string]string) tuix.Element {
 	}
 
 	errElements := []tuix.Element{
-		tuix.Text("Please fix the following errors:",
+		tuix.Text("⚠️ Please fix the following errors:",
 			tuix.NewStyle().Foreground(tuix.Red).Bold(true)),
 	}
 
